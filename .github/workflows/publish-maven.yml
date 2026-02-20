@@ -53,32 +53,32 @@ jobs:
           
           # Create settings.xml using printf to avoid issues with special characters
           cat > ~/.m2/settings.xml << 'SETTINGS_EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
-                                        http://maven.apache.org/xsd/settings-1.0.0.xsd">
-            <servers>
-              <server>
-                <id>ossrh</id>
-          SETTINGS_EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                              http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <servers>
+    <server>
+      <id>ossrh</id>
+SETTINGS_EOF
           
           printf '      <username>%s</username>\n' "${OSSRH_USERNAME}" >> ~/.m2/settings.xml
           printf '      <password>%s</password>\n' "${OSSRH_TOKEN}" >> ~/.m2/settings.xml
           
           cat >> ~/.m2/settings.xml << 'SETTINGS_EOF'
-              </server>
-            </servers>
-          </settings>
-          SETTINGS_EOF
+    </server>
+  </servers>
+</settings>
+SETTINGS_EOF
           
           # Create dummy settings-security.xml
           cat > ~/.m2/settings-security.xml <<'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <settingsSecurity>
-            <master>{jSMOWnoPFgsHVpMvz5VrIt5kRbzGpI8u+9EF1iFQyJQ=}</master>
-          </settingsSecurity>
-          EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<settingsSecurity>
+  <master>{jSMOWnoPFgsHVpMvz5VrIt5kRbzGpI8u+9EF1iFQyJQ=}</master>
+</settingsSecurity>
+EOF
           echo "Maven settings configured"
 
       - name: Update version if specified
