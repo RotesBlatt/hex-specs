@@ -50,7 +50,9 @@ jobs:
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
         run: |
           mkdir -p ~/.m2
-          cat > ~/.m2/settings.xml <<'EOF'
+          
+          # Create settings.xml using printf to avoid issues with special characters
+          cat > ~/.m2/settings.xml << 'SETTINGS_EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -59,16 +61,18 @@ jobs:
             <servers>
               <server>
                 <id>ossrh</id>
-                <username>REPLACE_USERNAME</username>
-                <password>REPLACE_PASSWORD</password>
+          SETTINGS_EOF
+          
+          printf '      <username>%s</username>\n' "${OSSRH_USERNAME}" >> ~/.m2/settings.xml
+          printf '      <password>%s</password>\n' "${OSSRH_TOKEN}" >> ~/.m2/settings.xml
+          
+          cat >> ~/.m2/settings.xml << 'SETTINGS_EOF'
               </server>
             </servers>
           </settings>
-          EOF
-          sed -i "s|REPLACE_USERNAME|${OSSRH_USERNAME}|g" ~/.m2/settings.xml
-          sed -i "s|REPLACE_PASSWORD|${OSSRH_TOKEN}|g" ~/.m2/settings.xml
+          SETTINGS_EOF
           
-          # Create dummy settings-security.xml to prevent Maven from looking for it
+          # Create dummy settings-security.xml
           cat > ~/.m2/settings-security.xml <<'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <settingsSecurity>
