@@ -51,7 +51,7 @@
         <kotlin.version>1.9.22</kotlin.version>
         <kotlin.code.style>official</kotlin.code.style>
         <openapi-generator.version>7.3.0</openapi-generator.version>
-        <ktor.version>2.3.7</ktor.version>
+        <ktor.version>3.4.0</ktor.version>
         <kotlinx-serialization.version>1.6.2</kotlinx-serialization.version>
     </properties>
 
