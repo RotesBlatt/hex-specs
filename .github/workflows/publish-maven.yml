@@ -53,11 +53,11 @@ jobs:
         run: |
           mkdir -p ~/.m2
           cat > ~/.m2/settings-security.xml <<'EOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<settingsSecurity>
-  <master>{jSMOWnoPFgsHVpMvz5VrIt5kRbzGpI8u+9EF1iFQyJQ=}</master>
-</settingsSecurity>
-EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <settingsSecurity>
+            <master>{jSMOWnoPFgsHVpMvz5VrIt5kRbzGpI8u+9EF1iFQyJQ=}</master>
+          </settingsSecurity>
+          EOF
 
       - name: Update version if specified
         if: ${{ github.event.inputs.version != '' }}
