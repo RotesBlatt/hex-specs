@@ -26,6 +26,7 @@ hex-specs/
 ├── package.json                           # npm configuration
 ├── tsconfig.json                          # TypeScript configuration
 ├── PUBLISHING.md                          # Publishing guide
+├── OPENAPI_ZOD_CLIENT.md                  # Zod client documentation
 ├── CHANGELOG.md                           # Version history
 └── README.md                              # This file
 ```
@@ -118,6 +119,15 @@ suspend fun main() {
 
 ## TypeScript/Node.js Client
 
+The TypeScript client is generated with [openapi-zod-client](https://github.com/astahmer/openapi-zod-client), providing **runtime validation** of API requests and responses using Zod schemas. This gives you:
+
+- ✅ Runtime type safety with Zod validation
+- ✅ Compile-time type safety with TypeScript
+- ✅ Smaller bundle size (single file output)
+- ✅ Better developer experience with automatic schema validation
+
+See [OPENAPI_ZOD_CLIENT.md](OPENAPI_ZOD_CLIENT.md) for detailed documentation.
+
 ### Install Dependencies
 
 ```bash
@@ -130,7 +140,7 @@ npm install
 npm run generate
 ```
 
-This will generate TypeScript client code in the `generated/typescript` directory.
+This will generate a TypeScript client with Zod schemas in `generated/typescript/api.ts`.
 
 ### Build the TypeScript Library
 
@@ -139,7 +149,7 @@ npm run build
 ```
 
 This will:
-1. Generate the TypeScript code from the OpenAPI spec
+1. Generate the TypeScript client with Zod schemas from the OpenAPI spec
 2. Compile the TypeScript to JavaScript
 3. Create type definitions
 4. Output everything to the `dist` directory
@@ -179,32 +189,40 @@ npm publish
 ### Example TypeScript Usage
 
 ```typescript
-import { Configuration, AccountApi, MatchesApi } from '@hextractor/api-client';
+import { makeApi } from '@hextractor/api-client';
+import Axios from 'axios';
 
-const config = new Configuration({
-  basePath: 'http://localhost:3000/api'
+// Create axios instance with base URL
+const axios = Axios.create({ 
+  baseURL: 'http://localhost:3000/api' 
 });
 
-const accountApi = new AccountApi(config);
-const matchesApi = new MatchesApi(config);
+// Create type-safe API client
+const api = makeApi(axios);
 
 async function getAccountInfo() {
   try {
-    const account = await accountApi.accountRegionSummonerNameTagLineGet(
-      'euw1',
-      'PlayerName',
-      'EUW'
-    );
-    console.log('Account:', account.data);
+    // All requests and responses are validated with Zod schemas
+    const account = await api.accountRegionSummonerNameTagLineGet({
+      params: {
+        region: 'euw1',
+        summonerName: 'PlayerName',
+        tagLine: 'EUW'
+      }
+    });
+    console.log('Account:', account);
     
-    const matches = await matchesApi.matchesRegionPuuidGet(
-      'euw1',
-      account.data.generalInfo.puuid,
-      0,
-      10
-    );
-    console.log('Matches:', matches.data);
+    const matches = await api.matchesRegionPuuidGet({
+      params: {
+        region: 'euw1',
+        puuid: account.generalInfo.puuid,
+        start: 0,
+        count: 10
+      }
+    });
+    console.log('Matches:', matches);
   } catch (error) {
+    // Zod validation errors or API errors
     console.error('Error:', error);
   }
 }
@@ -215,17 +233,24 @@ getAccountInfo();
 ### Example JavaScript Usage (CommonJS)
 
 ```javascript
-const { Configuration, AccountApi } = require('@hextractor/api-client');
+const { makeApi } = require('@hextractor/api-client');
+const Axios = require('axios');
 
-const config = new Configuration({
-  basePath: 'http://localhost:3000/api'
+const axios = Axios.create({ 
+  baseURL: 'http://localhost:3000/api' 
 });
 
-const accountApi = new AccountApi(config);
+const api = makeApi(axios);
 
-accountApi.accountRegionSummonerNameTagLineGet('euw1', 'PlayerName', 'EUW')
-  .then(response => {
-    console.log('Account:', response.data);
+api.accountRegionSummonerNameTagLineGet({
+  params: {
+    region: 'euw1',
+    summonerName: 'PlayerName',
+    tagLine: 'EUW'
+  }
+})
+  .then(account => {
+    console.log('Account:', account);
   })
   .catch(error => {
     console.error('Error:', error);
@@ -249,13 +274,15 @@ The Kotlin client is configured in [pom.xml](pom.xml). Key settings:
 
 ### TypeScript Configuration
 
-The TypeScript client is configured in [package.json](package.json) and [openapi-generator-typescript-config.json](openapi-generator-typescript-config.json). Key settings:
+The TypeScript client is configured in [package.json](package.json). Key features:
 
-- **Generator**: `typescript-axios`
-- **HTTP Client**: Axios
-- **ES6 Support**: Enabled
-- **Interfaces**: Enabled
-- **Single Request Parameter**: Enabled
+- **Generator**: `openapi-zod-client` (runtime validation)
+- **Validation**: Zod schemas for runtime type checking
+- **HTTP Client**: Axios (you provide your own instance)
+- **Output**: Single file (`generated/typescript/api.ts`)
+- **TypeScript**: Strict mode with ES2020 target
+
+See [OPENAPI_ZOD_CLIENT.md](OPENAPI_ZOD_CLIENT.md) for detailed documentation on using the Zod-based client.
 
 ## Customization
 
@@ -269,10 +296,11 @@ Edit [pom.xml](pom.xml) in the `openapi-generator-maven-plugin` configuration se
 
 ### Modify TypeScript Generation
 
-Edit the `generate` script in [package.json](package.json) or modify [openapi-generator-typescript-config.json](openapi-generator-typescript-config.json) to change:
-- Generator options
-- Output directory
-- Additional properties
+Edit the `generate` script in [package.json](package.json) to change:
+- Output file location (`-o` flag)
+- Additional openapi-zod-client options
+
+See the [openapi-zod-client documentation](https://github.com/astahmer/openapi-zod-client) for all available options.
 
 ## Troubleshooting
 

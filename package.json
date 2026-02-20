@@ -5,7 +5,7 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "generate": "openapi-generator-cli generate -i ./openApi/hex-tractor-open-api.yml -g typescript-axios -o ./generated/typescript --additional-properties=npmName=@hextractor/api-client,npmVersion=1.0.0,supportsES6=true,withInterfaces=true,useSingleRequestParameter=true",
+        "generate": "openapi-zod-client ./openApi/hex-tractor-open-api.yml --export-schemas --export-types -o ./generated/typescript/api.ts",
         "build": "npm run generate && tsc",
         "clean": "rimraf generated/typescript dist",
         "prepare": "npm run build"
@@ -24,13 +24,14 @@
         "url": "git+https://github.com/RotesBlatt/hex-specs"
     },
     "devDependencies": {
-        "@openapitools/openapi-generator-cli": "^2.9.0",
         "@types/node": "^20.11.0",
+        "openapi-zod-client": "^1.18.2",
         "rimraf": "^5.0.5",
         "typescript": "^5.3.3"
     },
     "dependencies": {
-        "axios": "^1.6.5"
+        "axios": "^1.6.7",
+        "zod": "^3.22.4"
     },
     "files": [
         "dist/**/*",
