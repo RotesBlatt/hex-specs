@@ -50,7 +50,7 @@ jobs:
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
         run: |
           mkdir -p ~/.m2
-          cat > ~/.m2/settings.xml <<EOF
+          cat > ~/.m2/settings.xml <<'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -59,13 +59,23 @@ jobs:
             <servers>
               <server>
                 <id>ossrh</id>
-                <username>${OSSRH_USERNAME}</username>
-                <password>${OSSRH_TOKEN}</password>
+                <username>REPLACE_USERNAME</username>
+                <password>REPLACE_PASSWORD</password>
               </server>
             </servers>
           </settings>
           EOF
-          cat ~/.m2/settings.xml
+          sed -i "s|REPLACE_USERNAME|${OSSRH_USERNAME}|g" ~/.m2/settings.xml
+          sed -i "s|REPLACE_PASSWORD|${OSSRH_TOKEN}|g" ~/.m2/settings.xml
+          
+          # Create dummy settings-security.xml to prevent Maven from looking for it
+          cat > ~/.m2/settings-security.xml <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <settingsSecurity>
+            <master>{jSMOWnoPFgsHVpMvz5VrIt5kRbzGpI8u+9EF1iFQyJQ=}</master>
+          </settingsSecurity>
+          EOF
+          echo "Maven settings configured"
 
       - name: Update version if specified
         if: ${{ github.event.inputs.version != '' }}
