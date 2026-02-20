@@ -45,15 +45,18 @@ jobs:
           gpgconf --launch gpg-agent
 
       - name: Configure Maven settings
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
         run: |
           mkdir -p ~/.m2
-          cat > ~/.m2/settings.xml << 'EOF'
+          cat > ~/.m2/settings.xml << EOF
           <settings>
             <servers>
               <server>
                 <id>ossrh</id>
-                <username>${env.OSSRH_USERNAME}</username>
-                <password>${env.OSSRH_TOKEN}</password>
+                <username>${OSSRH_USERNAME}</username>
+                <password>${OSSRH_TOKEN}</password>
               </server>
             </servers>
           </settings>
@@ -72,10 +75,6 @@ jobs:
 
       - name: Publish to Maven Central
         run: mvn -B deploy --no-transfer-progress -DskipTests -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}"
-        env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Get project version
         id: project-version
