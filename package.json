@@ -24,7 +24,7 @@
         "url": "git+https://github.com/RotesBlatt/hex-specs"
     },
     "devDependencies": {
-        "@types/node": "^20.11.0",
+        "@types/node": "^25.3.0",
         "mkdirp": "^3.0.1",
         "openapi-zod-client": "^1.18.2",
         "rimraf": "^5.0.5",
