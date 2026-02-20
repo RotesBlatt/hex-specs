@@ -1,9 +1,8 @@
-openapi: "3.1.1"
+openapi: "3.0.0"
 info:
   title: Hex-Tractor API
   version: "1.0"
   description: The Hex-Tractor API provides endpoints for retrieving Riot account and match information for the Hex-Tractor application. It allows clients to access Riot account details, league entries, and match information using various parameters such as summoner name, tag line, PUUID, and match ID. The API is designed to facilitate the integration of Riot data into the Hex-Tractor application, enabling users to view their account information and match history seamlessly.
-  summary: API for retrieving Riot account and match information for Hex-Tractor application
 servers:
   - url: http://localhost:3000/api
     description: Local Development server
@@ -587,13 +586,10 @@ components:
           items:
             $ref: "#/components/schemas/league-v4.LeagueEntryDTO"
         currentGame:
-          oneOf:
-            - $ref: "#/components/schemas/spectator-v5.CurrentGameInfo"
-            - type: "null"
+          $ref: "#/components/schemas/spectator-v5.CurrentGameInfo"
       required:
         - generalInfo
         - leagueEntries
-        - currentGame
 
     spectator-v5.CurrentGameInfo:
       type: object
@@ -837,9 +833,8 @@ components:
           description: "The team ID of this participant, indicating the participant's team"
           x-enum: team
         puuid:
-          oneOf:
-            - type: string
-            - type: "null"
+          type: string
+          x-type: string
           description: "The encrypted puuid of this participant. This field is null when the player is anonym."
         spell1Id:
           type: integer
@@ -868,7 +863,6 @@ components:
         - spell1Id
         - spell2Id
         - gameCustomizationObjects
-        - puuid
     spectator-v5.Perks:
       type: object
       title: Perks
