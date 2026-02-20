@@ -1,0 +1,2650 @@
+openapi: "3.1.1"
+info:
+  title: Hex-Tractor API
+  version: "1.0"
+  description: The Hex-Tractor API provides endpoints for retrieving Riot account and match information for the Hex-Tractor application. It allows clients to access Riot account details, league entries, and match information using various parameters such as summoner name, tag line, PUUID, and match ID. The API is designed to facilitate the integration of Riot data into the Hex-Tractor application, enabling users to view their account information and match history seamlessly.
+  summary: API for retrieving Riot account and match information for Hex-Tractor application
+servers:
+  - url: http://localhost:3000/api
+    description: Local Development server
+paths:
+  /account/{region}/{summonerName}/{tagLine}:
+    get:
+      summary: Get Riot account information by summoner name and tag line
+      description: Retrieve Riot account details using the summoner name and tag line for a specific region
+      parameters:
+        - name: region
+          in: path
+          required: true
+          description: The region of the Riot account (e.g., NA, EUW, EUNE)
+          schema:
+            type: string
+          examples:
+            NA:
+              value: na1
+              description: North America
+            EUW:
+              value: euw1
+              description: Europe West
+            EUNE:
+              value: eun1
+              description: Europe Nordic & East
+        - name: summonerName
+          in: path
+          required: true
+          schema:
+            type: string
+          examples:
+            valid_name:
+              value: "helomatch"
+              description: A sample summoner name for EUW region
+        - name: tagLine
+          in: path
+          required: true
+          schema:
+            type: string
+          examples:
+            valid_tag:
+              value: "EUW"
+              description: A sample tag line for EUW region
+            helomatch_tag:
+              value: "5767"
+              description: Tag line for the summoner name "helomatch"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountInfo"
+        "400":
+          description: Bad Request - Invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validationError"
+        "404":
+          description: Not Found - Account not found for the given parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal Server Error - An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+  /account/{region}/{puuid}:
+    get:
+      summary: Get Riot account information by puuid
+      description: Retrieve Riot account details using the encrypted summoner ID for a specific region
+      parameters:
+        - name: region
+          in: path
+          required: true
+          description: The region of the Riot account (e.g., NA, EUW, EUNE)
+          schema:
+            type: string
+          examples:
+            NA:
+              value: na1
+              description: North America
+            EUW:
+              value: euw1
+              description: Europe West
+            EUNE:
+              value: eun1
+              description: Europe Nordic & East
+        - name: puuid
+          in: path
+          required: true
+          schema:
+            type: string
+          examples:
+            valid_id:
+              value: "rkrmXhHeKayKBCXI_xngBNpnY_rBXwyPMW_PtY-JaSzHj80gjfuesdk5GtiRxqGxavf2T7Ek-JPJrg"
+              description: A sample encrypted summoner ID for EUW region
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountInfo"
+        "400":
+          description: Bad Request - Invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validationError"
+        "404":
+          description: Not Found - Account not found for the given parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal Server Error - An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+  /leagues/{region}/{queue}/{tier}/{division}:
+    get:
+      summary: Get Riot league entries by queue, tier, and division
+      description: Retrieve Riot league entries for a specific region, queue type, tier, and division
+      parameters:
+        - name: region
+          in: path
+          required: true
+          description: The region of the Riot account (e.g., NA, EUW, EUNE)
+          schema:
+            type: string
+          examples:
+            NA:
+              value: na1
+              description: North America
+            EUW:
+              value: euw1
+              description: Europe West
+            EUNE:
+              value: eun1
+              description: Europe Nordic & East
+        - name: queue
+          in: path
+          required: true
+          description: The queue type (e.g., RANKED_SOLO_5x5, RANKED_FLEX_SR)
+          schema:
+            type: string
+          examples:
+            solo_queue:
+              value: RANKED_SOLO_5x5
+              description: Ranked Solo/Duo Queue on Summoners Rift
+            flex_queue:
+              value: RANKED_FLEX_SR
+              description: Ranked Flex Queue on Summoners Rift
+        - name: tier
+          in: path
+          required: true
+          description: The ranked tier (e.g., IRON, BRONZE, SILVER, GOLD, PLATINUM, EMERALD, DIAMOND, MASTER, GRANDMASTER, CHALLENGER)
+          schema:
+            type: string
+          examples:
+            iron_tier:
+              value: IRON
+              description: Iron tier in ranked play (lowest tier)
+            bronze_tier:
+              value: BRONZE
+              description: Bronze tier in ranked play
+            silver_tier:
+              value: SILVER
+              description: Silver tier in ranked play
+            gold_tier:
+              value: GOLD
+              description: Gold tier in ranked play
+            platinum_tier:
+              value: PLATINUM
+              description: Platinum tier in ranked play
+            emerald_tier:
+              value: EMERALD
+              description: Emerald tier in ranked play
+            diamond_tier:
+              value: DIAMOND
+              description: Diamond tier in ranked play
+            master_tier:
+              value: MASTER
+              description: Master tier in ranked play (third highest tier)
+            grandmaster_tier:
+              value: GRANDMASTER
+              description: Grandmaster tier in ranked play (second highest tier)
+            challenger_tier:
+              value: CHALLENGER
+              description: Challenger tier in ranked play (highest tier)
+        - name: division
+          in: path
+          required: true
+          description: The ranked division (e.g., I, II, III, IV)
+          schema:
+            type: string
+          examples:
+            division_i:
+              value: I
+              description: Division I within a ranked tier (highest division)
+            division_ii:
+              value: II
+              description: Division II within a ranked tier
+            division_iii:
+              value: III
+              description: Division III within a ranked tier
+            division_iv:
+              value: IV
+              description: Division IV within a ranked tier (lowest division)
+        - name: count
+          in: query
+          required: false
+          description: The maximum number of league entries to return (optional)
+          schema:
+            type: integer
+            format: int32
+          allowEmptyValue: true
+      responses:
+        "200":
+          description: OK - League entries retrieved successfully for the specified parameters.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LeagueDetails"
+        "400":
+          description: Bad Request - Invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validationError"
+        "500":
+          description: Internal Server Error - An unexpected error occurred while processing the request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+  /matches/match/{region}/{matchId}:
+    get:
+      summary: Get Riot match details by match ID
+      description: Retrieve Riot match details using the match ID for a specific region
+      parameters:
+        - name: region
+          in: path
+          required: true
+          description: The region of the Riot account (e.g., America, Europe, Asia)
+          schema:
+            type: string
+          examples:
+            America:
+              value: americas
+              description: Riot Americas region (includes North and South America)
+            Europe:
+              value: europe
+              description: Riot Europe region (includes EUW and EUNE)
+            Asia:
+              value: asia
+              description: Riot Asia region (includes KR and JP)
+        - name: matchId
+          in: path
+          required: true
+          description: The ID of the match to retrieve details for
+          schema:
+            type: string
+          examples:
+            valid_match_id:
+              value: "EUW1_7736139185"
+              description: A sample match ID for EUW region
+      responses:
+        "200":
+          description: OK - Match details retrieved successfully for the specified parameters.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/match-v5.MatchDto"
+        "400":
+          description: Bad Request - Invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validationError"
+        "404":
+          description: Not Found - Match not found for the given parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal Server Error - Failed to retrieve match details for the specified parameters.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+  /matches/match-ids/{region}/{puuid}:
+    get:
+      summary: Get Riot match IDs by player PUUID
+      description: Retrieve a list of Riot match IDs for a specific player using their encrypted PUUID and region
+      parameters:
+        - name: region
+          in: path
+          required: true
+          description: The region of the Riot account (e.g., America, Europe, Asia)
+          schema:
+            type: string
+          examples:
+            America:
+              value: americas
+              description: Riot Americas region (includes North and South America)
+            Europe:
+              value: europe
+              description: Riot Europe region (includes EUW and EUNE)
+            Asia:
+              value: asia
+              description: Riot Asia region (includes KR and JP)
+        - name: puuid
+          in: path
+          required: true
+          description: The encrypted PUUID of the player to retrieve match IDs for
+          schema:
+            type: string
+          examples:
+            valid_puuid:
+              value: "rkrmXhHeKayKBCXI_xngBNpnY_rBXwyPMW_PtY-JaSzHj80gjfuesdk5GtiRxqGxavf2T7Ek-JPJrg"
+              description: A sample encrypted PUUID for EUW region
+        - name: start
+          in: query
+          required: false
+          description: The starting index for pagination of match details (optional)
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
+          allowEmptyValue: true
+        - name: count
+          in: query
+          required: false
+          description: The maximum number of match details to return (optional)
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            default: 10
+          allowEmptyValue: true
+      responses:
+        "200":
+          description: OK - Match IDs retrieved successfully for the specified parameters.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  example: "EUW1_7736139185"
+        "400":
+          description: Bad Request - Invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validationError"
+        "404":
+          description: Not Found - No matches found for the given parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal Server Error - Failed to retrieve match IDs for the specified parameters.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+  /matches/{region}/{puuid}:
+    get:
+      summary: Get Riot match details by player PUUID
+      description: Retrieve a list of Riot match details for a specific player using their encrypted PUUID and region
+      parameters:
+        - name: region
+          in: path
+          required: true
+          description: The region of the Riot account (e.g., America, Europe, Asia)
+          schema:
+            type: string
+          examples:
+            America:
+              value: americas
+              description: Riot Americas region (includes North and South America)
+            Europe:
+              value: europe
+              description: Riot Europe region (includes EUW and EUNE)
+            Asia:
+              value: asia
+              description: Riot Asia region (includes KR and JP)
+        - name: puuid
+          in: path
+          required: true
+          description: The encrypted PUUID of the player to retrieve match details for
+          schema:
+            type: string
+          examples:
+            valid_puuid:
+              value: "rkrmXhHeKayKBCXI_xngBNpnY_rBXwyPMW_PtY-JaSzHj80gjfuesdk5GtiRxqGxavf2T7Ek-JPJrg"
+              description: A sample encrypted PUUID for EUW region
+        - name: start
+          in: query
+          required: false
+          description: The starting index for pagination of match details (optional)
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
+          allowEmptyValue: true
+        - name: count
+          in: query
+          required: false
+          description: The maximum number of match details to return (optional)
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            default: 10
+          allowEmptyValue: true
+      responses:
+        "200":
+          description: OK - Match details retrieved successfully for the specified parameters.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/match-v5.MatchDto"
+        "400":
+          description: Bad Request - Invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validationError"
+        "404":
+          description: Not Found - No matches found for the given parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal Server Error - Failed to retrieve match details for the specified parameters.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+components:
+  schemas:
+    simpleInternalError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "An unknown error occurred"
+      required:
+        - message
+    simpleError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "An error occurred"
+      required:
+        - message
+    validationError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Invalid request parameters"
+        statusCode:
+          type: integer
+          example: 400
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                example: "field"
+              value:
+                type: string
+                example: "euw2"
+              msg:
+                type: string
+                example: "Invalid region value"
+              path:
+                type: string
+                example: "region"
+              location:
+                type: string
+                example: "params"
+            required:
+              - type
+              - value
+              - msg
+              - path
+              - location
+      required:
+        - message
+        - statusCode
+        - details
+    LeagueDetails:
+      type: object
+      properties:
+        queueType:
+          type: string
+          example: "RANKED_SOLO_5x5"
+        tier:
+          type: string
+          example: "CHALLENGER"
+        division:
+          type: string
+          example: "II"
+        name:
+          type: string
+          example: "Vayne's Warriors"
+        lastUpdated:
+          type: string
+          example: "2024-06-16T12:00:00Z"
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/league-v4.LeagueItemDTO"
+      required:
+        - queueType
+        - tier
+        - division
+        - entries
+        - lastUpdated
+    AccountInfo:
+      type: object
+      properties:
+        generalInfo:
+          type: object
+          properties:
+            puuid:
+              type: string
+              example: "rkrmXhHeKayKBCXI_xngBNpnY_rBXwyPMW_PtY-JaSzHj80gjfuesdk5GtiRxqGxavf2T7Ek-JPJrg"
+            summonerName:
+              type: string
+              example: "helomatch"
+            tagLine:
+              type: string
+              example: "5767"
+            profileIconId:
+              type: integer
+              example: 23
+            revisionDate:
+              type: integer
+              example: 1771204482000
+            summonerLevel:
+              type: integer
+              example: 136
+            lastUpdated:
+              type: string
+              example: "2024-06-16T12:00:00Z"
+          required:
+            - puuid
+            - summonerName
+            - tagLine
+            - profileIconId
+            - revisionDate
+            - summonerLevel
+            - lastUpdated
+        leagueEntries:
+          type: array
+          items:
+            $ref: "#/components/schemas/league-v4.LeagueEntryDTO"
+        currentGame:
+          oneOf:
+            - $ref: "#/components/schemas/spectator-v5.CurrentGameInfo"
+            - type: "null"
+      required:
+        - generalInfo
+        - leagueEntries
+        - currentGame
+
+    spectator-v5.CurrentGameInfo:
+      type: object
+      title: CurrentGameInfo
+      properties:
+        gameId:
+          type: integer
+          format: int64
+          x-type: long
+          description: "The ID of the game"
+        gameType:
+          type: string
+          x-type: string
+          description: "The game type"
+          x-enum: gameType
+        gameStartTime:
+          type: integer
+          format: int64
+          x-type: long
+          description: "The game start time represented in epoch milliseconds"
+        mapId:
+          type: integer
+          format: int64
+          x-type: long
+          description: "The ID of the map"
+          x-enum: map
+        gameLength:
+          type: integer
+          format: int64
+          x-type: long
+          description: "The amount of time in seconds that has passed since the game started"
+        platformId:
+          type: string
+          x-type: string
+          description: "The ID of the platform on which the game is being played"
+        gameMode:
+          type: string
+          x-type: string
+          description: "The game mode"
+          x-enum: gameMode
+        bannedChampions:
+          type: array
+          items:
+            $ref: "#/components/schemas/spectator-v5.BannedChampion"
+          description: "Banned champion information"
+        gameQueueConfigId:
+          type: integer
+          format: int64
+          x-type: long
+          description: "The queue type (queue types are documented on the Game Constants page)"
+          x-enum: queue
+        observers:
+          allOf:
+            - $ref: "#/components/schemas/spectator-v5.Observer"
+          x-type: Observer
+          description: "The observer information"
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/spectator-v5.CurrentGameParticipant"
+          x-type: "List[CurrentGameParticipant]"
+          description: "The participant information"
+      required:
+        - gameId
+        - gameType
+        - gameStartTime
+        - mapId
+        - gameLength
+        - platformId
+        - gameMode
+        - bannedChampions
+        - observers
+        - participants
+    league-v4.LeagueListDTO:
+      type: object
+      title: LeagueListDTO
+      properties:
+        leagueId:
+          type: string
+          x-type: string
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/league-v4.LeagueItemDTO"
+          x-type: "List[LeagueItemDTO]"
+        tier:
+          type: string
+          x-type: string
+          x-enum: tier
+        name:
+          type: string
+          x-type: string
+        queue:
+          type: string
+          x-type: string
+          x-enum: queueType
+      required:
+        - entries
+        - tier
+        - queue
+    league-v4.LeagueItemDTO:
+      type: object
+      title: LeagueItemDTO
+      properties:
+        freshBlood:
+          type: boolean
+          x-type: boolean
+        wins:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Winning team on Summoners Rift."
+        miniSeries:
+          $ref: "#/components/schemas/league-v4.MiniSeriesDTO"
+        inactive:
+          type: boolean
+          x-type: boolean
+        veteran:
+          type: boolean
+          x-type: boolean
+        hotStreak:
+          type: boolean
+          x-type: boolean
+        rank:
+          type: string
+          x-type: string
+          x-enum: division
+        leaguePoints:
+          type: integer
+          format: int32
+          x-type: int
+        losses:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Losing team on Summoners Rift."
+        puuid:
+          type: string
+          x-type: string
+          description: "Player's encrypted puuid."
+        summonerId:
+          type: string
+          x-type: string
+          description: "Encrypted summoner ID. This field is deprecated and will be removed. Use `puuid` instead."
+      required:
+        - freshBlood
+        - wins
+        - inactive
+        - veteran
+        - hotStreak
+        - leaguePoints
+        - losses
+        - puuid
+    league-v4.MiniSeriesDTO:
+      type: object
+      title: MiniSeriesDTO
+      properties:
+        losses:
+          type: integer
+          format: int32
+          x-type: int
+        progress:
+          type: string
+          x-type: string
+        target:
+          type: integer
+          format: int32
+          x-type: int
+        wins:
+          type: integer
+          format: int32
+          x-type: int
+      required:
+        - losses
+        - progress
+        - target
+        - wins
+    spectator-v5.BannedChampion:
+      type: object
+      title: BannedChampion
+      properties:
+        pickTurn:
+          type: integer
+          format: int32
+          x-type: int
+          description: "The turn during which the champion was banned"
+        championId:
+          type: integer
+          format: int64
+          x-type: long
+          description: "The ID of the banned champion"
+          x-enum: champion
+        teamId:
+          type: integer
+          format: int64
+          x-type: long
+          description: "The ID of the team that banned the champion"
+          x-enum: team
+      required:
+        - pickTurn
+        - championId
+        - teamId
+    spectator-v5.Observer:
+      type: object
+      title: Observer
+      properties:
+        encryptionKey:
+          type: string
+          x-type: string
+          description: "Key used to decrypt the spectator grid game data for playback"
+      required:
+        - encryptionKey
+    spectator-v5.CurrentGameParticipant:
+      type: object
+      title: CurrentGameParticipant
+      properties:
+        championId:
+          type: integer
+          format: int64
+          x-type: long
+          description: "The ID of the champion played by this participant"
+          x-enum: champion
+        perks:
+          allOf:
+            - $ref: "#/components/schemas/spectator-v5.Perks"
+          x-type: Perks
+          description: "Perks/Runes Reforged Information"
+        profileIconId:
+          type: integer
+          format: int64
+          x-type: long
+          description: "The ID of the profile icon used by this participant"
+        bot:
+          type: boolean
+          x-type: boolean
+          description: "Flag indicating whether or not this participant is a bot"
+        teamId:
+          type: integer
+          format: int64
+          x-type: long
+          description: "The team ID of this participant, indicating the participant's team"
+          x-enum: team
+        puuid:
+          oneOf:
+            - type: string
+            - type: "null"
+          description: "The encrypted puuid of this participant. This field is null when the player is anonym."
+        spell1Id:
+          type: integer
+          format: int64
+          x-type: long
+          description: "The ID of the first summoner spell used by this participant"
+        spell2Id:
+          type: integer
+          format: int64
+          x-type: long
+          description: "The ID of the second summoner spell used by this participant"
+        gameCustomizationObjects:
+          type: array
+          items:
+            $ref: "#/components/schemas/spectator-v5.GameCustomizationObject"
+          x-type: "List[GameCustomizationObject]"
+          description: "List of Game Customizations"
+        riotId:
+          type: string
+          x-type: string
+      required:
+        - championId
+        - profileIconId
+        - bot
+        - teamId
+        - spell1Id
+        - spell2Id
+        - gameCustomizationObjects
+        - puuid
+    spectator-v5.Perks:
+      type: object
+      title: Perks
+      properties:
+        perkIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+            x-type: long
+          x-type: "List[long]"
+          description: "IDs of the perks/runes assigned."
+        perkStyle:
+          type: integer
+          format: int64
+          x-type: long
+          description: "Primary runes path"
+        perkSubStyle:
+          type: integer
+          format: int64
+          x-type: long
+          description: "Secondary runes path"
+      required:
+        - perkIds
+        - perkStyle
+        - perkSubStyle
+    spectator-v5.GameCustomizationObject:
+      type: object
+      title: GameCustomizationObject
+      properties:
+        category:
+          type: string
+          x-type: string
+          description: "Category identifier for Game Customization"
+        content:
+          type: string
+          x-type: string
+          description: "Game Customization content"
+      required:
+        - category
+        - content
+    match-v5.MatchDto:
+      type: object
+      title: MatchDto
+      properties:
+        metadata:
+          $ref: "#/components/schemas/match-v5.MetadataDto"
+          description: "Match metadata."
+        info:
+          $ref: "#/components/schemas/match-v5.InfoDto"
+          description: "Match info."
+      required:
+        - metadata
+        - info
+    match-v5.MetadataDto:
+      type: object
+      title: MetadataDto
+      properties:
+        dataVersion:
+          type: string
+          x-type: string
+          description: "Match data version."
+        matchId:
+          type: string
+          x-type: string
+          description: "Match id."
+        participants:
+          type: array
+          items:
+            type: string
+            x-type: string
+          x-type: "List[string]"
+          description: "A list of participant PUUIDs."
+      required:
+        - dataVersion
+        - matchId
+        - participants
+    match-v5.InfoDto:
+      type: object
+      title: InfoDto
+      properties:
+        endOfGameResult:
+          type: string
+          x-type: string
+          description: "Refer to indicate if the game ended in termination."
+        gameCreation:
+          type: integer
+          format: int64
+          x-type: long
+          description: "Unix timestamp for when the game is created on the game server (i.e., the loading screen)."
+        gameDuration:
+          type: integer
+          format: int64
+          x-type: long
+          description: "Prior to patch 11.20, this field returns the game length in milliseconds calculated from gameEndTimestamp - gameStartTimestamp. Post patch 11.20, this field returns the max timePlayed of any participant in the game in seconds, which makes the behavior of this field consistent with that of match-v4. The best way to handling the change in this field is to treat the value as milliseconds if the gameEndTimestamp field isn't in the response and to treat the value as seconds if gameEndTimestamp is in the response."
+        gameEndTimestamp:
+          type: integer
+          format: int64
+          x-type: long
+          description: 'Unix timestamp for when match ends on the game server. This timestamp can occasionally be significantly longer than when the match "ends". The most reliable way of determining the timestamp for the end of the match would be to add the max time played of any participant to the gameStartTimestamp. This field was added to match-v5 in patch 11.20 on Oct 5th, 2021.'
+        gameId:
+          type: integer
+          format: int64
+          x-type: long
+        gameMode:
+          type: string
+          x-type: string
+          description: "Refer to the Game Constants documentation."
+          x-enum: gameMode
+        gameName:
+          type: string
+          x-type: string
+        gameStartTimestamp:
+          type: integer
+          format: int64
+          x-type: long
+          description: "Unix timestamp for when match starts on the game server."
+        gameType:
+          type: string
+          x-type: string
+          x-enum: gameType
+        gameVersion:
+          type: string
+          x-type: string
+          description: "The first two parts can be used to determine the patch a game was played on."
+        mapId:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Refer to the Game Constants documentation."
+          x-enum: map
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/match-v5.ParticipantDto"
+          x-type: "List[ParticipantDto]"
+        platformId:
+          type: string
+          x-type: string
+          description: "Platform where the match was played."
+        queueId:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Refer to the Game Constants documentation."
+          x-enum: queue
+        teams:
+          type: array
+          items:
+            $ref: "#/components/schemas/match-v5.TeamDto"
+          x-type: "List[TeamDto]"
+        tournamentCode:
+          type: string
+          x-type: string
+          description: "Tournament code used to generate the match. This field was added to match-v5 in patch 11.13 on June 23rd, 2021."
+        gameModeMutators:
+          type: array
+          items:
+            type: string
+            x-type: string
+      required:
+        - gameCreation
+        - gameDuration
+        - gameId
+        - gameMode
+        - gameName
+        - gameStartTimestamp
+        - gameType
+        - gameVersion
+        - mapId
+        - participants
+        - platformId
+        - queueId
+        - teams
+    match-v5.ParticipantDto:
+      type: object
+      title: ParticipantDto
+      properties:
+        allInPings:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Yellow crossed swords"
+        assistMePings:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Green flag"
+        assists:
+          type: integer
+          format: int32
+          x-type: int
+        baronKills:
+          type: integer
+          format: int32
+          x-type: int
+        bountyLevel:
+          type: integer
+          format: int32
+          x-type: int
+        champExperience:
+          type: integer
+          format: int32
+          x-type: int
+        champLevel:
+          type: integer
+          format: int32
+          x-type: int
+        championId:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Prior to patch 11.4, on Feb 18th, 2021, this field returned invalid championIds. We recommend determining the champion based on the championName field for matches played prior to patch 11.4."
+          x-enum: champion
+        championName:
+          type: string
+          x-type: string
+        commandPings:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Blue generic ping (ALT+click)"
+        championTransform:
+          type: integer
+          format: int32
+          x-type: int
+          description: "This field is currently only utilized for Kayn's transformations. (Legal values: 0 - None, 1 - Slayer, 2 - Assassin)"
+        consumablesPurchased:
+          type: integer
+          format: int32
+          x-type: int
+        challenges:
+          $ref: "#/components/schemas/match-v5.ChallengesDto"
+        damageDealtToBuildings:
+          type: integer
+          format: int32
+          x-type: int
+        damageDealtToObjectives:
+          type: integer
+          format: int32
+          x-type: int
+        damageDealtToTurrets:
+          type: integer
+          format: int32
+          x-type: int
+        damageSelfMitigated:
+          type: integer
+          format: int32
+          x-type: int
+        deaths:
+          type: integer
+          format: int32
+          x-type: int
+        detectorWardsPlaced:
+          type: integer
+          format: int32
+          x-type: int
+        doubleKills:
+          type: integer
+          format: int32
+          x-type: int
+        dragonKills:
+          type: integer
+          format: int32
+          x-type: int
+        eligibleForProgression:
+          type: boolean
+          x-type: boolean
+        enemyMissingPings:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Yellow questionmark"
+        enemyVisionPings:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Red eyeball"
+        firstBloodAssist:
+          type: boolean
+          x-type: boolean
+        firstBloodKill:
+          type: boolean
+          x-type: boolean
+        firstTowerAssist:
+          type: boolean
+          x-type: boolean
+        firstTowerKill:
+          type: boolean
+          x-type: boolean
+        gameEndedInEarlySurrender:
+          type: boolean
+          x-type: boolean
+          description: "This is an offshoot of the OneStone challenge. The code checks if a spell with the same instance ID does the final point of damage to at least 2 Champions. It doesn't matter if they're enemies, but you cannot hurt your friends."
+        gameEndedInSurrender:
+          type: boolean
+          x-type: boolean
+        holdPings:
+          type: integer
+          format: int32
+          x-type: int
+        getBackPings:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Yellow circle with horizontal line"
+        goldEarned:
+          type: integer
+          format: int32
+          x-type: int
+        goldSpent:
+          type: integer
+          format: int32
+          x-type: int
+        individualPosition:
+          type: string
+          x-type: string
+          description: "Both individualPosition and teamPosition are computed by the game server and are different versions of the most likely position played by a player. The individualPosition is the best guess for which position the player actually played in isolation of anything else. The teamPosition is the best guess for which position the player actually played if we add the constraint that each team must have one top player, one jungle, one middle, etc. Generally the recommendation is to use the teamPosition field over the individualPosition field."
+        inhibitorKills:
+          type: integer
+          format: int32
+          x-type: int
+        inhibitorTakedowns:
+          type: integer
+          format: int32
+          x-type: int
+        inhibitorsLost:
+          type: integer
+          format: int32
+          x-type: int
+        item0:
+          type: integer
+          format: int32
+          x-type: int
+        item1:
+          type: integer
+          format: int32
+          x-type: int
+        item2:
+          type: integer
+          format: int32
+          x-type: int
+        item3:
+          type: integer
+          format: int32
+          x-type: int
+        item4:
+          type: integer
+          format: int32
+          x-type: int
+        item5:
+          type: integer
+          format: int32
+          x-type: int
+        item6:
+          type: integer
+          format: int32
+          x-type: int
+        itemsPurchased:
+          type: integer
+          format: int32
+          x-type: int
+        killingSprees:
+          type: integer
+          format: int32
+          x-type: int
+        kills:
+          type: integer
+          format: int32
+          x-type: int
+        lane:
+          type: string
+          x-type: string
+        largestCriticalStrike:
+          type: integer
+          format: int32
+          x-type: int
+        largestKillingSpree:
+          type: integer
+          format: int32
+          x-type: int
+        largestMultiKill:
+          type: integer
+          format: int32
+          x-type: int
+        longestTimeSpentLiving:
+          type: integer
+          format: int32
+          x-type: int
+        magicDamageDealt:
+          type: integer
+          format: int32
+          x-type: int
+        magicDamageDealtToChampions:
+          type: integer
+          format: int32
+          x-type: int
+        magicDamageTaken:
+          type: integer
+          format: int32
+          x-type: int
+        missions:
+          $ref: "#/components/schemas/match-v5.MissionsDto"
+        neutralMinionsKilled:
+          type: integer
+          format: int32
+          x-type: int
+          description: "neutralMinionsKilled = mNeutralMinionsKilled, which is incremented on kills of kPet and kJungleMonster"
+        needVisionPings:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Green ward"
+        nexusKills:
+          type: integer
+          format: int32
+          x-type: int
+        nexusTakedowns:
+          type: integer
+          format: int32
+          x-type: int
+        nexusLost:
+          type: integer
+          format: int32
+          x-type: int
+        objectivesStolen:
+          type: integer
+          format: int32
+          x-type: int
+        objectivesStolenAssists:
+          type: integer
+          format: int32
+          x-type: int
+        onMyWayPings:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Blue arrow pointing at ground"
+        participantId:
+          type: integer
+          format: int32
+          x-type: int
+        playerScore0:
+          x-alias: PlayerScore0
+          type: number
+          format: float
+        playerScore1:
+          x-alias: PlayerScore1
+          type: number
+          format: float
+        playerScore2:
+          x-alias: PlayerScore2
+          type: number
+          format: float
+        playerScore3:
+          x-alias: PlayerScore3
+          type: number
+          format: float
+        playerScore4:
+          x-alias: PlayerScore4
+          type: number
+          format: float
+        playerScore5:
+          x-alias: PlayerScore5
+          type: number
+          format: float
+        playerScore6:
+          x-alias: PlayerScore6
+          type: number
+          format: float
+        playerScore7:
+          x-alias: PlayerScore7
+          type: number
+          format: float
+        playerScore8:
+          x-alias: PlayerScore8
+          type: number
+          format: float
+        playerScore9:
+          x-alias: PlayerScore9
+          type: number
+          format: float
+        playerScore10:
+          x-alias: PlayerScore10
+          type: number
+          format: float
+        playerScore11:
+          x-alias: PlayerScore11
+          type: number
+          format: float
+        pentaKills:
+          type: integer
+          format: int32
+          x-type: int
+        perks:
+          $ref: "#/components/schemas/match-v5.PerksDto"
+        physicalDamageDealt:
+          type: integer
+          format: int32
+          x-type: int
+        physicalDamageDealtToChampions:
+          type: integer
+          format: int32
+          x-type: int
+        physicalDamageTaken:
+          type: integer
+          format: int32
+          x-type: int
+        placement:
+          type: integer
+          format: int32
+          x-type: int
+        playerAugment1:
+          type: integer
+          format: int32
+          x-type: int
+        playerAugment2:
+          type: integer
+          format: int32
+          x-type: int
+        playerAugment3:
+          type: integer
+          format: int32
+          x-type: int
+        playerAugment4:
+          type: integer
+          format: int32
+          x-type: int
+        playerSubteamId:
+          type: integer
+          format: int32
+          x-type: int
+        pushPings:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Green minion"
+        profileIcon:
+          type: integer
+          format: int32
+          x-type: int
+        puuid:
+          type: string
+          x-type: string
+        quadraKills:
+          type: integer
+          format: int32
+          x-type: int
+        riotIdGameName:
+          type: string
+          x-type: string
+        riotIdTagline:
+          type: string
+          x-type: string
+        role:
+          type: string
+          x-type: string
+        sightWardsBoughtInGame:
+          type: integer
+          format: int32
+          x-type: int
+        spell1Casts:
+          type: integer
+          format: int32
+          x-type: int
+        spell2Casts:
+          type: integer
+          format: int32
+          x-type: int
+        spell3Casts:
+          type: integer
+          format: int32
+          x-type: int
+        spell4Casts:
+          type: integer
+          format: int32
+          x-type: int
+        subteamPlacement:
+          type: integer
+          format: int32
+          x-type: int
+        summoner1Casts:
+          type: integer
+          format: int32
+          x-type: int
+        summoner1Id:
+          type: integer
+          format: int32
+          x-type: int
+        summoner2Casts:
+          type: integer
+          format: int32
+          x-type: int
+        summoner2Id:
+          type: integer
+          format: int32
+          x-type: int
+        summonerId:
+          type: string
+          x-type: string
+        summonerLevel:
+          type: integer
+          format: int32
+          x-type: int
+        summonerName:
+          type: string
+          x-type: string
+        teamEarlySurrendered:
+          type: boolean
+          x-type: boolean
+        teamId:
+          type: integer
+          format: int32
+          x-type: int
+          x-enum: team
+        teamPosition:
+          type: string
+          x-type: string
+          description: "Both individualPosition and teamPosition are computed by the game server and are different versions of the most likely position played by a player. The individualPosition is the best guess for which position the player actually played in isolation of anything else. The teamPosition is the best guess for which position the player actually played if we add the constraint that each team must have one top player, one jungle, one middle, etc. Generally the recommendation is to use the teamPosition field over the individualPosition field."
+        timeCCingOthers:
+          type: integer
+          format: int32
+          x-type: int
+        timePlayed:
+          type: integer
+          format: int32
+          x-type: int
+        totalAllyJungleMinionsKilled:
+          type: integer
+          format: int32
+          x-type: int
+        totalDamageDealt:
+          type: integer
+          format: int32
+          x-type: int
+        totalDamageDealtToChampions:
+          type: integer
+          format: int32
+          x-type: int
+        totalDamageShieldedOnTeammates:
+          type: integer
+          format: int32
+          x-type: int
+        totalDamageTaken:
+          type: integer
+          format: int32
+          x-type: int
+        totalEnemyJungleMinionsKilled:
+          type: integer
+          format: int32
+          x-type: int
+        totalHeal:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Whenever positive health is applied (which translates to all heals in the game but not things like regeneration), totalHeal is incremented by the amount of health received. This includes healing enemies, jungle monsters, yourself, etc"
+        totalHealsOnTeammates:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Whenever positive health is applied (which translates to all heals in the game but not things like regeneration), totalHealsOnTeammates is incremented by the amount of health received.  This is post modified, so if you heal someone missing 5 health for 100 you will get +5 totalHealsOnTeammates"
+        totalMinionsKilled:
+          type: integer
+          format: int32
+          x-type: int
+          description: "totalMillionsKilled = mMinionsKilled, which is only incremented on kills of kTeamMinion, kMeleeLaneMinion, kSuperLaneMinion, kRangedLaneMinion and kSiegeLaneMinion"
+        totalTimeCCDealt:
+          type: integer
+          format: int32
+          x-type: int
+        totalTimeSpentDead:
+          type: integer
+          format: int32
+          x-type: int
+        totalUnitsHealed:
+          type: integer
+          format: int32
+          x-type: int
+        tripleKills:
+          type: integer
+          format: int32
+          x-type: int
+        trueDamageDealt:
+          type: integer
+          format: int32
+          x-type: int
+        trueDamageDealtToChampions:
+          type: integer
+          format: int32
+          x-type: int
+        trueDamageTaken:
+          type: integer
+          format: int32
+          x-type: int
+        turretKills:
+          type: integer
+          format: int32
+          x-type: int
+        turretTakedowns:
+          type: integer
+          format: int32
+          x-type: int
+        turretsLost:
+          type: integer
+          format: int32
+          x-type: int
+        unrealKills:
+          type: integer
+          format: int32
+          x-type: int
+        visionScore:
+          type: integer
+          format: int32
+          x-type: int
+        visionClearedPings:
+          type: integer
+          format: int32
+          x-type: int
+        visionWardsBoughtInGame:
+          type: integer
+          format: int32
+          x-type: int
+        wardsKilled:
+          type: integer
+          format: int32
+          x-type: int
+        wardsPlaced:
+          type: integer
+          format: int32
+          x-type: int
+        win:
+          type: boolean
+          x-type: boolean
+        baitPings:
+          type: integer
+          format: int32
+          x-type: int
+        dangerPings:
+          type: integer
+          format: int32
+          x-type: int
+          description: "https://github.com/RiotGames/developer-relations/issues/870"
+        basicPings:
+          type: integer
+          format: int32
+          x-type: int
+          description: "https://github.com/RiotGames/developer-relations/issues/814"
+        playerAugment5:
+          type: integer
+          format: int32
+          x-type: int
+        playerAugment6:
+          type: integer
+          format: int32
+          x-type: int
+        riotIdName:
+          type: string
+          x-type: string
+          description: "Deprecated, use `riotIdGameName`. This field name was briefly used instead of `riotIdGameName`, prior to patch 14.5."
+        retreatPings:
+          type: integer
+          format: int32
+          x-type: int
+          description: "https://github.com/RiotGames/developer-relations/issues/814"
+        championSkinId:
+          type: integer
+          format: int32
+          x-type: int
+      required:
+        - assists
+        - baronKills
+        - champExperience
+        - champLevel
+        - championId
+        - championName
+        - championTransform
+        - consumablesPurchased
+        - damageDealtToObjectives
+        - damageDealtToTurrets
+        - damageSelfMitigated
+        - deaths
+        - detectorWardsPlaced
+        - doubleKills
+        - dragonKills
+        - firstBloodAssist
+        - firstBloodKill
+        - firstTowerAssist
+        - firstTowerKill
+        - gameEndedInEarlySurrender
+        - gameEndedInSurrender
+        - goldEarned
+        - goldSpent
+        - individualPosition
+        - inhibitorKills
+        - item0
+        - item1
+        - item2
+        - item3
+        - item4
+        - item5
+        - item6
+        - itemsPurchased
+        - killingSprees
+        - kills
+        - lane
+        - largestCriticalStrike
+        - largestKillingSpree
+        - largestMultiKill
+        - longestTimeSpentLiving
+        - magicDamageDealt
+        - magicDamageDealtToChampions
+        - magicDamageTaken
+        - neutralMinionsKilled
+        - nexusKills
+        - objectivesStolen
+        - objectivesStolenAssists
+        - participantId
+        - pentaKills
+        - perks
+        - physicalDamageDealt
+        - physicalDamageDealtToChampions
+        - physicalDamageTaken
+        - profileIcon
+        - puuid
+        - quadraKills
+        - role
+        - sightWardsBoughtInGame
+        - spell1Casts
+        - spell2Casts
+        - spell3Casts
+        - spell4Casts
+        - summoner1Casts
+        - summoner1Id
+        - summoner2Casts
+        - summoner2Id
+        - summonerId
+        - summonerLevel
+        - summonerName
+        - teamEarlySurrendered
+        - teamId
+        - teamPosition
+        - timeCCingOthers
+        - timePlayed
+        - totalDamageDealt
+        - totalDamageDealtToChampions
+        - totalDamageShieldedOnTeammates
+        - totalDamageTaken
+        - totalHeal
+        - totalHealsOnTeammates
+        - totalMinionsKilled
+        - totalTimeCCDealt
+        - totalTimeSpentDead
+        - totalUnitsHealed
+        - tripleKills
+        - trueDamageDealt
+        - trueDamageDealtToChampions
+        - trueDamageTaken
+        - turretKills
+        - unrealKills
+        - visionScore
+        - visionWardsBoughtInGame
+        - wardsKilled
+        - wardsPlaced
+        - win
+    match-v5.ChallengesDto:
+      type: object
+      title: ChallengesDto
+      properties:
+        12AssistStreakCount:
+          type: integer
+          format: int32
+          x-type: int
+        baronBuffGoldAdvantageOverThreshold:
+          type: integer
+          format: int32
+          x-type: int
+        controlWardTimeCoverageInRiverOrEnemyHalf:
+          type: number
+          format: float
+          x-type: float
+        earliestBaron:
+          type: number
+          format: double
+          x-type: double
+        earliestDragonTakedown:
+          type: number
+          format: double
+          x-type: double
+        earliestElderDragon:
+          type: number
+          format: double
+          x-type: double
+        earlyLaningPhaseGoldExpAdvantage:
+          type: number
+          format: double
+          x-type: double
+        fasterSupportQuestCompletion:
+          type: integer
+          format: int32
+          x-type: int
+          enum:
+            - 0
+            - 1
+        fastestLegendary:
+          type: number
+          format: double
+          x-type: double
+        hadAfkTeammate:
+          type: integer
+          format: int32
+          x-type: int
+          enum:
+            - 0
+            - 1
+        highestChampionDamage:
+          type: integer
+          format: int32
+          x-type: int
+        highestCrowdControlScore:
+          type: integer
+          format: int32
+          x-type: int
+          enum:
+            - 0
+            - 1
+        highestWardKills:
+          type: integer
+          format: int32
+          x-type: int
+          enum:
+            - 0
+            - 1
+        junglerKillsEarlyJungle:
+          type: integer
+          format: int32
+          x-type: int
+        killsOnLanersEarlyJungleAsJungler:
+          type: integer
+          format: int32
+          x-type: int
+        laningPhaseGoldExpAdvantage:
+          type: integer
+          format: int32
+          x-type: int
+          enum:
+            - 0
+            - 1
+        legendaryCount:
+          type: integer
+          format: int32
+          x-type: int
+        maxCsAdvantageOnLaneOpponent:
+          type: number
+          format: float
+          x-type: float
+        maxLevelLeadLaneOpponent:
+          type: integer
+          format: int32
+          x-type: int
+        mostWardsDestroyedOneSweeper:
+          type: integer
+          format: int32
+          x-type: int
+        mythicItemUsed:
+          type: integer
+          format: int32
+          x-type: int
+        playedChampSelectPosition:
+          type: integer
+          format: int32
+          x-type: int
+          enum:
+            - 0
+            - 1
+        soloTurretsLategame:
+          type: integer
+          format: int32
+          x-type: int
+        takedownsFirst25Minutes:
+          type: integer
+          format: int32
+          x-type: int
+        teleportTakedowns:
+          type: integer
+          format: int32
+          x-type: int
+        thirdInhibitorDestroyedTime:
+          type: number
+          format: double
+          x-type: double
+        threeWardsOneSweeperCount:
+          type: integer
+          format: int32
+          x-type: int
+        visionScoreAdvantageLaneOpponent:
+          type: number
+          format: float
+          x-type: float
+        InfernalScalePickup:
+          type: integer
+          format: int32
+          x-type: int
+        fistBumpParticipation:
+          type: integer
+          format: int32
+          x-type: int
+        voidMonsterKill:
+          type: integer
+          format: int32
+          x-type: int
+        abilityUses:
+          type: integer
+          format: int32
+          x-type: int
+        acesBefore15Minutes:
+          type: integer
+          format: int32
+          x-type: int
+        alliedJungleMonsterKills:
+          type: number
+          format: float
+          x-type: float
+        baronTakedowns:
+          type: integer
+          format: int32
+          x-type: int
+        blastConeOppositeOpponentCount:
+          type: integer
+          format: int32
+          x-type: int
+        bountyGold:
+          type: number
+          format: double
+          x-type: double
+        buffsStolen:
+          type: integer
+          format: int32
+          x-type: int
+        completeSupportQuestInTime:
+          type: integer
+          format: int32
+          x-type: int
+        controlWardsPlaced:
+          type: integer
+          format: int32
+          x-type: int
+        damagePerMinute:
+          type: number
+          format: float
+          x-type: float
+        damageTakenOnTeamPercentage:
+          type: number
+          format: float
+          x-type: float
+        dancedWithRiftHerald:
+          type: integer
+          format: int32
+          x-type: int
+        deathsByEnemyChamps:
+          type: integer
+          format: int32
+          x-type: int
+        dodgeSkillShotsSmallWindow:
+          type: integer
+          format: int32
+          x-type: int
+        doubleAces:
+          type: integer
+          format: int32
+          x-type: int
+        dragonTakedowns:
+          type: integer
+          format: int32
+          x-type: int
+        legendaryItemUsed:
+          type: array
+          items:
+            type: integer
+            format: int32
+            x-type: int
+          x-type: "List[int]"
+        effectiveHealAndShielding:
+          type: number
+          format: float
+          x-type: float
+        elderDragonKillsWithOpposingSoul:
+          type: integer
+          format: int32
+          x-type: int
+        elderDragonMultikills:
+          type: integer
+          format: int32
+          x-type: int
+        enemyChampionImmobilizations:
+          type: integer
+          format: int32
+          x-type: int
+        enemyJungleMonsterKills:
+          type: number
+          format: float
+          x-type: float
+        epicMonsterKillsNearEnemyJungler:
+          type: integer
+          format: int32
+          x-type: int
+        epicMonsterKillsWithin30SecondsOfSpawn:
+          type: integer
+          format: int32
+          x-type: int
+        epicMonsterSteals:
+          type: integer
+          format: int32
+          x-type: int
+        epicMonsterStolenWithoutSmite:
+          type: integer
+          format: int32
+          x-type: int
+        firstTurretKilled:
+          type: number
+          format: double
+          x-type: double
+        firstTurretKilledTime:
+          type: number
+          format: float
+          x-type: float
+        flawlessAces:
+          type: integer
+          format: int32
+          x-type: int
+        fullTeamTakedown:
+          type: integer
+          format: int32
+          x-type: int
+        gameLength:
+          type: number
+          format: float
+          x-type: float
+        getTakedownsInAllLanesEarlyJungleAsLaner:
+          type: integer
+          format: int32
+          x-type: int
+        goldPerMinute:
+          type: number
+          format: float
+          x-type: float
+        hadOpenNexus:
+          type: integer
+          format: int32
+          x-type: int
+        immobilizeAndKillWithAlly:
+          type: integer
+          format: int32
+          x-type: int
+        initialBuffCount:
+          type: integer
+          format: int32
+          x-type: int
+        initialCrabCount:
+          type: integer
+          format: int32
+          x-type: int
+        jungleCsBefore10Minutes:
+          type: number
+          format: float
+          x-type: float
+        junglerTakedownsNearDamagedEpicMonster:
+          type: integer
+          format: int32
+          x-type: int
+        kda:
+          type: number
+          format: float
+          x-type: float
+        killAfterHiddenWithAlly:
+          type: integer
+          format: int32
+          x-type: int
+        killedChampTookFullTeamDamageSurvived:
+          type: integer
+          format: int32
+          x-type: int
+        killingSprees:
+          type: integer
+          format: int32
+          x-type: int
+        killParticipation:
+          type: number
+          format: float
+          x-type: float
+        killsNearEnemyTurret:
+          type: integer
+          format: int32
+          x-type: int
+        killsOnOtherLanesEarlyJungleAsLaner:
+          type: integer
+          format: int32
+          x-type: int
+        killsOnRecentlyHealedByAramPack:
+          type: integer
+          format: int32
+          x-type: int
+        killsUnderOwnTurret:
+          type: integer
+          format: int32
+          x-type: int
+        killsWithHelpFromEpicMonster:
+          type: integer
+          format: int32
+          x-type: int
+        knockEnemyIntoTeamAndKill:
+          type: integer
+          format: int32
+          x-type: int
+        kTurretsDestroyedBeforePlatesFall:
+          type: integer
+          format: int32
+          x-type: int
+        landSkillShotsEarlyGame:
+          type: integer
+          format: int32
+          x-type: int
+        laneMinionsFirst10Minutes:
+          type: integer
+          format: int32
+          x-type: int
+        lostAnInhibitor:
+          type: integer
+          format: int32
+          x-type: int
+        maxKillDeficit:
+          type: integer
+          format: int32
+          x-type: int
+        mejaisFullStackInTime:
+          type: integer
+          format: int32
+          x-type: int
+        moreEnemyJungleThanOpponent:
+          type: number
+          format: float
+          x-type: float
+        multiKillOneSpell:
+          type: integer
+          format: int32
+          x-type: int
+          description: "This is an offshoot of the OneStone challenge. The code checks if a spell with the same instance ID does the final point of damage to at least 2 Champions. It doesn't matter if they're enemies, but you cannot hurt your friends."
+        multikills:
+          type: integer
+          format: int32
+          x-type: int
+        multikillsAfterAggressiveFlash:
+          type: integer
+          format: int32
+          x-type: int
+        multiTurretRiftHeraldCount:
+          type: integer
+          format: int32
+          x-type: int
+        outerTurretExecutesBefore10Minutes:
+          type: integer
+          format: int32
+          x-type: int
+        outnumberedKills:
+          type: integer
+          format: int32
+          x-type: int
+        outnumberedNexusKill:
+          type: integer
+          format: int32
+          x-type: int
+        perfectDragonSoulsTaken:
+          type: integer
+          format: int32
+          x-type: int
+        perfectGame:
+          type: integer
+          format: int32
+          x-type: int
+        pickKillWithAlly:
+          type: integer
+          format: int32
+          x-type: int
+        poroExplosions:
+          type: integer
+          format: int32
+          x-type: int
+        quickCleanse:
+          type: integer
+          format: int32
+          x-type: int
+        quickFirstTurret:
+          type: integer
+          format: int32
+          x-type: int
+        quickSoloKills:
+          type: integer
+          format: int32
+          x-type: int
+        riftHeraldTakedowns:
+          type: integer
+          format: int32
+          x-type: int
+        saveAllyFromDeath:
+          type: integer
+          format: int32
+          x-type: int
+        scuttleCrabKills:
+          type: integer
+          format: int32
+          x-type: int
+        shortestTimeToAceFromFirstTakedown:
+          type: number
+          format: float
+          x-type: float
+        skillshotsDodged:
+          type: integer
+          format: int32
+          x-type: int
+        skillshotsHit:
+          type: integer
+          format: int32
+          x-type: int
+        snowballsHit:
+          type: integer
+          format: int32
+          x-type: int
+        soloBaronKills:
+          type: integer
+          format: int32
+          x-type: int
+        SWARM_DefeatAatrox:
+          type: integer
+          format: int32
+          x-type: int
+        SWARM_DefeatBriar:
+          type: integer
+          format: int32
+          x-type: int
+        SWARM_DefeatMiniBosses:
+          type: integer
+          format: int32
+          x-type: int
+        SWARM_EvolveWeapon:
+          type: integer
+          format: int32
+          x-type: int
+        SWARM_Have3Passives:
+          type: integer
+          format: int32
+          x-type: int
+        SWARM_KillEnemy:
+          type: integer
+          format: int32
+          x-type: int
+        SWARM_PickupGold:
+          type: number
+          format: float
+          x-type: float
+        SWARM_ReachLevel50:
+          type: integer
+          format: int32
+          x-type: int
+        SWARM_Survive15Min:
+          type: integer
+          format: int32
+          x-type: int
+        SWARM_WinWith5EvolvedWeapons:
+          type: integer
+          format: int32
+          x-type: int
+        soloKills:
+          type: integer
+          format: int32
+          x-type: int
+        stealthWardsPlaced:
+          type: integer
+          format: int32
+          x-type: int
+        survivedSingleDigitHpCount:
+          type: integer
+          format: int32
+          x-type: int
+        survivedThreeImmobilizesInFight:
+          type: integer
+          format: int32
+          x-type: int
+        takedownOnFirstTurret:
+          type: integer
+          format: int32
+          x-type: int
+        takedowns:
+          type: integer
+          format: int32
+          x-type: int
+        takedownsAfterGainingLevelAdvantage:
+          type: integer
+          format: int32
+          x-type: int
+        takedownsBeforeJungleMinionSpawn:
+          type: integer
+          format: int32
+          x-type: int
+        takedownsFirstXMinutes:
+          type: integer
+          format: int32
+          x-type: int
+        takedownsInAlcove:
+          type: integer
+          format: int32
+          x-type: int
+        takedownsInEnemyFountain:
+          type: integer
+          format: int32
+          x-type: int
+        teamBaronKills:
+          type: integer
+          format: int32
+          x-type: int
+        teamDamagePercentage:
+          type: number
+          format: float
+          x-type: float
+        teamElderDragonKills:
+          type: integer
+          format: int32
+          x-type: int
+        teamRiftHeraldKills:
+          type: integer
+          format: int32
+          x-type: int
+        tookLargeDamageSurvived:
+          type: integer
+          format: int32
+          x-type: int
+        turretPlatesTaken:
+          type: integer
+          format: int32
+          x-type: int
+        turretsTakenWithRiftHerald:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Any player who damages a tower that is destroyed within 30 seconds of a Rift Herald charge will receive credit. A player who does not damage the tower will not receive credit."
+        turretTakedowns:
+          type: integer
+          format: int32
+          x-type: int
+        twentyMinionsIn3SecondsCount:
+          type: integer
+          format: int32
+          x-type: int
+        twoWardsOneSweeperCount:
+          type: integer
+          format: int32
+          x-type: int
+        unseenRecalls:
+          type: integer
+          format: int32
+          x-type: int
+        visionScorePerMinute:
+          type: number
+          format: float
+          x-type: float
+        wardsGuarded:
+          type: integer
+          format: int32
+          x-type: int
+        wardTakedowns:
+          type: integer
+          format: int32
+          x-type: int
+        wardTakedownsBefore20M:
+          type: integer
+          format: int32
+          x-type: int
+        HealFromMapSources:
+          type: number
+          format: double
+          x-type: double
+      description: "Challenges DTO"
+    match-v5.MissionsDto:
+      type: object
+      title: MissionsDto
+      properties:
+        playerScore0:
+          x-alias: PlayerScore0
+          type: number
+          format: float
+        playerScore1:
+          x-alias: PlayerScore1
+          type: number
+          format: float
+        playerScore2:
+          x-alias: PlayerScore2
+          type: number
+          format: float
+        playerScore3:
+          x-alias: PlayerScore3
+          type: number
+          format: float
+        playerScore4:
+          x-alias: PlayerScore4
+          type: number
+          format: float
+        playerScore5:
+          x-alias: PlayerScore5
+          type: number
+          format: float
+        playerScore6:
+          x-alias: PlayerScore6
+          type: number
+          format: float
+        playerScore7:
+          x-alias: PlayerScore7
+          type: number
+          format: float
+        playerScore8:
+          x-alias: PlayerScore8
+          type: number
+          format: float
+        playerScore9:
+          x-alias: PlayerScore9
+          type: number
+          format: float
+        playerScore10:
+          x-alias: PlayerScore10
+          type: number
+          format: float
+        playerScore11:
+          x-alias: PlayerScore11
+          type: number
+          format: float
+      description: "Missions DTO"
+    match-v5.PerksDto:
+      type: object
+      title: PerksDto
+      properties:
+        statPerks:
+          $ref: "#/components/schemas/match-v5.PerkStatsDto"
+        styles:
+          type: array
+          items:
+            $ref: "#/components/schemas/match-v5.PerkStyleDto"
+          x-type: "List[PerkStyleDto]"
+      required:
+        - statPerks
+        - styles
+    match-v5.PerkStatsDto:
+      type: object
+      title: PerkStatsDto
+      properties:
+        defense:
+          type: integer
+          format: int32
+          x-type: int
+        flex:
+          type: integer
+          format: int32
+          x-type: int
+        offense:
+          type: integer
+          format: int32
+          x-type: int
+      required:
+        - defense
+        - flex
+        - offense
+    match-v5.PerkStyleDto:
+      type: object
+      title: PerkStyleDto
+      properties:
+        description:
+          type: string
+          x-type: string
+        selections:
+          type: array
+          items:
+            $ref: "#/components/schemas/match-v5.PerkStyleSelectionDto"
+          x-type: "List[PerkStyleSelectionDto]"
+        style:
+          type: integer
+          format: int32
+          x-type: int
+      required:
+        - description
+        - selections
+        - style
+    match-v5.PerkStyleSelectionDto:
+      type: object
+      title: PerkStyleSelectionDto
+      properties:
+        perk:
+          type: integer
+          format: int32
+          x-type: int
+        var1:
+          type: integer
+          format: int32
+          x-type: int
+        var2:
+          type: integer
+          format: int32
+          x-type: int
+        var3:
+          type: integer
+          format: int32
+          x-type: int
+      required:
+        - perk
+        - var1
+        - var2
+        - var3
+    match-v5.TeamDto:
+      type: object
+      title: TeamDto
+      properties:
+        bans:
+          type: array
+          items:
+            $ref: "#/components/schemas/match-v5.BanDto"
+          x-type: "List[BanDto]"
+        objectives:
+          $ref: "#/components/schemas/match-v5.ObjectivesDto"
+        teamId:
+          type: integer
+          format: int32
+          x-type: int
+          x-enum: team
+        win:
+          type: boolean
+          x-type: boolean
+        feats:
+          $ref: "#/components/schemas/match-v5.FeatsDto"
+      required:
+        - bans
+        - objectives
+        - teamId
+        - win
+    match-v5.BanDto:
+      type: object
+      title: BanDto
+      properties:
+        championId:
+          type: integer
+          format: int32
+          x-type: int
+          x-enum: champion
+        pickTurn:
+          type: integer
+          format: int32
+          x-type: int
+      required:
+        - championId
+        - pickTurn
+    match-v5.ObjectivesDto:
+      type: object
+      title: ObjectivesDto
+      properties:
+        baron:
+          $ref: "#/components/schemas/match-v5.ObjectiveDto"
+        champion:
+          $ref: "#/components/schemas/match-v5.ObjectiveDto"
+        dragon:
+          $ref: "#/components/schemas/match-v5.ObjectiveDto"
+        horde:
+          $ref: "#/components/schemas/match-v5.ObjectiveDto"
+        inhibitor:
+          $ref: "#/components/schemas/match-v5.ObjectiveDto"
+        riftHerald:
+          $ref: "#/components/schemas/match-v5.ObjectiveDto"
+        tower:
+          $ref: "#/components/schemas/match-v5.ObjectiveDto"
+        atakhan:
+          $ref: "#/components/schemas/match-v5.ObjectiveDto"
+      required:
+        - baron
+        - champion
+        - dragon
+        - inhibitor
+        - riftHerald
+        - tower
+    match-v5.ObjectiveDto:
+      type: object
+      title: ObjectiveDto
+      properties:
+        first:
+          type: boolean
+          x-type: boolean
+        kills:
+          type: integer
+          format: int32
+          x-type: int
+      required:
+        - first
+        - kills
+    match-v5.FeatsDto:
+      type: object
+      title: FeatsDto
+      properties:
+        EPIC_MONSTER_KILL:
+          $ref: "#/components/schemas/match-v5.FeatDto"
+        FIRST_BLOOD:
+          $ref: "#/components/schemas/match-v5.FeatDto"
+        FIRST_TURRET:
+          $ref: "#/components/schemas/match-v5.FeatDto"
+    match-v5.FeatDto:
+      type: object
+      title: FeatDto
+      properties:
+        featState:
+          type: integer
+          format: int32
+          x-type: int
+    league-v4.LeagueEntryDTO:
+      type: object
+      title: LeagueEntryDTO
+      properties:
+        leagueId:
+          type: string
+          x-type: string
+        puuid:
+          type: string
+          x-type: string
+          description: "Player's encrypted puuid."
+        queueType:
+          type: string
+          x-type: string
+          x-enum: queueType
+        tier:
+          type: string
+          x-type: string
+          x-enum: tier
+        rank:
+          type: string
+          x-type: string
+          description: "The player's division within a tier."
+          x-enum: division
+        leaguePoints:
+          type: integer
+          format: int32
+          x-type: int
+        wins:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Winning team on Summoners Rift."
+        losses:
+          type: integer
+          format: int32
+          x-type: int
+          description: "Losing team on Summoners Rift."
+        hotStreak:
+          type: boolean
+          x-type: boolean
+        veteran:
+          type: boolean
+          x-type: boolean
+        freshBlood:
+          type: boolean
+          x-type: boolean
+        inactive:
+          type: boolean
+          x-type: boolean
+        miniSeries:
+          $ref: "#/components/schemas/league-v4.MiniSeriesDTO"
+        summonerId:
+          type: string
+          x-type: string
+          description: "Encrypted summoner ID. This field is deprecated and will be removed. Use `puuid` instead."
+      required:
+        - puuid
+        - queueType
+        - leaguePoints
+        - wins
+        - losses
+        - hotStreak
+        - veteran
+        - freshBlood
+        - inactive

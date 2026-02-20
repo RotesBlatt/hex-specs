@@ -1,0 +1,194 @@
+name: Release Packages
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (e.g., 1.0.0)"
+        required: true
+        type: string
+      create_tag:
+        description: "Create git tag"
+        required: true
+        type: boolean
+        default: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: get-version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate version format
+        run: |
+          VERSION=${{ steps.get-version.outputs.version }}
+          if [[ ! $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9\.]+)?$ ]]; then
+            echo "Invalid version format: $VERSION"
+            echo "Expected format: X.Y.Z or X.Y.Z-suffix"
+            exit 1
+          fi
+
+  create-tag:
+    needs: validate
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.create_tag == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create and push tag
+        run: |
+          git tag -a "v${{ needs.validate.outputs.version }}" -m "Release v${{ needs.validate.outputs.version }}"
+          git push origin "v${{ needs.validate.outputs.version }}"
+
+  publish-npm:
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Update version
+        run: |
+          npm version ${{ needs.validate.outputs.version }} --no-git-tag-version
+
+      - name: Generate and build TypeScript client
+        run: npm run build
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-maven:
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: "11"
+          distribution: "temurin"
+          cache: "maven"
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Update version
+        run: |
+          mvn versions:set -DnewVersion=${{ needs.validate.outputs.version }} -DgenerateBackupPoms=false
+
+      - name: Generate Kotlin client
+        run: mvn clean generate-sources
+
+      - name: Build and sign artifacts
+        run: mvn -B package --no-transfer-progress
+
+      - name: Publish to Maven Central
+        run: mvn -B deploy --no-transfer-progress -DskipTests
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: maven-artifacts
+          path: |
+            target/*.jar
+            target/*.pom
+          retention-days: 30
+
+  create-release:
+    needs: [validate, publish-npm, publish-maven]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Maven artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: maven-artifacts
+          path: artifacts
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ needs.validate.outputs.version }}
+          release_name: Release v${{ needs.validate.outputs.version }}
+          body: |
+            ## 🚀 Release v${{ needs.validate.outputs.version }}
+
+            ### 📦 npm Package
+            ```bash
+            npm install @hextractor/api-client@${{ needs.validate.outputs.version }}
+            ```
+
+            ### 📦 Maven Artifact
+            ```xml
+            <dependency>
+                <groupId>com.hextractor</groupId>
+                <artifactId>hex-tractor-api-client</artifactId>
+                <version>${{ needs.validate.outputs.version }}</version>
+            </dependency>
+            ```
+
+            ```kotlin
+            implementation("com.hextractor:hex-tractor-api-client:${{ needs.validate.outputs.version }}")
+            ```
+
+            ### 📝 Changes
+            See [CHANGELOG.md](CHANGELOG.md) for detailed changes.
+
+            ---
+
+            **Published to:**
+            - npm Registry: https://www.npmjs.com/package/@hextractor/api-client
+            - Maven Central: https://central.sonatype.com/artifact/com.hextractor/hex-tractor-api-client
+          draft: false
+          prerelease: ${{ contains(needs.validate.outputs.version, '-') }}

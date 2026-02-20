@@ -1,0 +1,98 @@
+name: Publish Maven Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (leave empty to use pom.xml version)"
+        required: false
+        type: string
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish-maven:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: "11"
+          distribution: "temurin"
+          cache: "maven"
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Update version if specified
+        if: ${{ github.event.inputs.version != '' }}
+        run: |
+          mvn versions:set -DnewVersion=${{ github.event.inputs.version }} -DgenerateBackupPoms=false
+
+      - name: Generate Kotlin client
+        run: mvn clean generate-sources
+
+      - name: Build and sign artifacts
+        run: mvn -B package --no-transfer-progress
+
+      - name: Publish to Maven Central
+        run: mvn -B deploy --no-transfer-progress -DskipTests
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Get project version
+        id: project-version
+        run: echo "version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+
+      - name: Upload artifacts
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-artifact@v4
+        with:
+          name: maven-artifacts
+          path: |
+            target/*.jar
+            target/*.pom
+          retention-days: 30
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          body: |
+            ## Maven Artifact Published
+
+            📦 Artifact: `com.hextractor:hex-tractor-api-client:${{ steps.project-version.outputs.version }}`
+
+            ### Maven Installation
+            ```xml
+            <dependency>
+                <groupId>com.hextractor</groupId>
+                <artifactId>hex-tractor-api-client</artifactId>
+                <version>${{ steps.project-version.outputs.version }}</version>
+            </dependency>
+            ```
+
+            ### Gradle Installation
+            ```kotlin
+            implementation("com.hextractor:hex-tractor-api-client:${{ steps.project-version.outputs.version }}")
+            ```
+
+            ### Changes
+            See [CHANGELOG.md](CHANGELOG.md) for details.
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}

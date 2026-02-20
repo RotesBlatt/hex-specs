@@ -1,0 +1,35 @@
+{
+    "name": "@hextractor/api-client",
+    "version": "1.0.0",
+    "description": "Generated TypeScript client for Hex-Tractor API",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "generate": "openapi-generator-cli generate -i ./openApi/hex-tractor-open-api.yml -g typescript-axios -o ./generated/typescript --additional-properties=npmName=@hextractor/api-client,npmVersion=1.0.0,supportsES6=true,withInterfaces=true,useSingleRequestParameter=true",
+        "build": "npm run generate && tsc",
+        "clean": "rimraf generated/typescript dist",
+        "prepare": "npm run build"
+    },
+    "keywords": [
+        "hex-tractor",
+        "riot-api",
+        "openapi",
+        "typescript",
+        "api-client"
+    ],
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+        "@openapitools/openapi-generator-cli": "^2.9.0",
+        "@types/node": "^20.11.0",
+        "rimraf": "^5.0.5",
+        "typescript": "^5.3.3"
+    },
+    "dependencies": {
+        "axios": "^1.6.5"
+    },
+    "files": [
+        "dist/**/*",
+        "generated/typescript/**/*"
+    ]
+}
