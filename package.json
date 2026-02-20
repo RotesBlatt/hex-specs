@@ -17,8 +17,12 @@
         "typescript",
         "api-client"
     ],
-    "author": "",
+    "author": "RotesBlatt",
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/RotesBlatt/hex-specs"
+    },
     "devDependencies": {
         "@openapitools/openapi-generator-cli": "^2.9.0",
         "@types/node": "^20.11.0",
