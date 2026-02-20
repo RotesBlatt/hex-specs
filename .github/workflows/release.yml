@@ -129,6 +129,16 @@ jobs:
           gpgconf --kill gpg-agent
           gpgconf --launch gpg-agent
 
+      - name: Create settings-security.xml
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings-security.xml <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<settingsSecurity>
+  <master>{jSMOWnoPFgsHVpMvz5VrIt5kRbzGpI8u+9EF1iFQyJQ=}</master>
+</settingsSecurity>
+EOF
+
       - name: Update version
         run: |
           mvn versions:set -DnewVersion=${{ needs.validate.outputs.version }} -DgenerateBackupPoms=false
