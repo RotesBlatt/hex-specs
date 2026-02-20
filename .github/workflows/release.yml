@@ -113,6 +113,17 @@ jobs:
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
 
+          # Configure GPG for non-interactive use
+          mkdir -p ~/.gnupg
+          chmod 700 ~/.gnupg
+          echo "use-agent" >> ~/.gnupg/gpg.conf
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+          chmod 600 ~/.gnupg/gpg.conf
+          chmod 600 ~/.gnupg/gpg-agent.conf
+          gpgconf --kill gpg-agent
+          gpgconf --launch gpg-agent
+
       - name: Configure Maven settings
         run: |
           mkdir -p ~/.m2
@@ -136,10 +147,10 @@ jobs:
         run: mvn clean generate-sources
 
       - name: Build and sign artifacts
-        run: mvn -B package --no-transfer-progress
+        run: mvn -B package --no-transfer-progress -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}"
 
       - name: Publish to Maven Central
-        run: mvn -B deploy --no-transfer-progress -DskipTests
+        run: mvn -B deploy --no-transfer-progress -DskipTests -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}"
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
