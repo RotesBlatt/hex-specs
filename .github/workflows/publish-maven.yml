@@ -27,6 +27,11 @@ jobs:
           java-version: "11"
           distribution: "temurin"
           cache: "maven"
+          server-id: "ossrh" # Match the server ID in your settings.xml
+          server-username: ${{ secrets.OSSRH_USERNAME }}
+          server-password: ${{ secrets.OSSRH_PASSWORD }}
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Import GPG key
         run: |
