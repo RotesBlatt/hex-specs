@@ -125,10 +125,11 @@ afterEvaluate {
     tasks.matching { it.name.contains("package") }.configureEach {
         dependsOn(tasks.named("openApiGenerate"))
     }
-    // Ensure metadata generation and publication tasks depend on assemble
+    // Ensure metadata generation depends on all link and klib tasks
     tasks.matching { it.name.startsWith("generateMetadataFileFor") && it.name.endsWith("Publication") }.configureEach {
-        dependsOn(tasks.named("assemble"))
+        dependsOn(tasks.matching { it.name.contains("link") || it.name.contains("Klibrary") })
     }
+    // Ensure all publication tasks depend on assemble
     tasks.matching { it.name.startsWith("publish") && it.name.contains("Publication") }.configureEach {
         dependsOn(tasks.named("assemble"))
     }
