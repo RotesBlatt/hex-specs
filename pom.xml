@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.rotesblatt</groupId>
-    <artifactId>hex-tractor-api-client</artifactId>
+    <artifactId>hex-tractor-data-api</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 

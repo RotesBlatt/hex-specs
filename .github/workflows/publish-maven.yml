@@ -61,36 +61,3 @@ jobs:
             target/*.jar
             target/*.pom
           retention-days: 30
-
-      - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
-          body: |
-            ## Maven Artifact Published
-
-            📦 Artifact: `com.hextractor:hex-tractor-api-client:${{ steps.project-version.outputs.version }}`
-
-            ### Maven Installation
-            ```xml
-            <dependency>
-                <groupId>com.hextractor</groupId>
-                <artifactId>hex-tractor-api-client</artifactId>
-                <version>${{ steps.project-version.outputs.version }}</version>
-            </dependency>
-            ```
-
-            ### Gradle Installation
-            ```kotlin
-            implementation("com.hextractor:hex-tractor-api-client:${{ steps.project-version.outputs.version }}")
-            ```
-
-            ### Changes
-            See [CHANGELOG.md](CHANGELOG.md) for details.
-          draft: false
-          prerelease: ${{ contains(github.ref_name, '-') }}
-          files: |
-            target/*.jar
-            target/*.pom

@@ -171,20 +171,20 @@ jobs:
 
             ### 📦 npm Package
             ```bash
-            npm install @rotesblatt/hex-tractor-api-client@${{ needs.validate.outputs.version }}
+            npm install @rotesblatt/hex-tractor-data-api@${{ needs.validate.outputs.version }}
             ```
 
             ### 📦 Maven Artifact
             ```xml
             <dependency>
                 <groupId>io.github.rotesblatt</groupId>
-                <artifactId>hex-tractor-api-client</artifactId>
+                <artifactId>hex-tractor-data-api</artifactId>
                 <version>${{ needs.validate.outputs.version }}</version>
             </dependency>
             ```
 
             ```kotlin
-            implementation("io.github.rotesblatt:hex-tractor-api-client:${{ needs.validate.outputs.version }}")
+            implementation("io.github.rotesblatt:hex-tractor-data-api:${{ needs.validate.outputs.version }}")
             ```
 
             ### 📝 Changes
@@ -193,8 +193,8 @@ jobs:
             ---
 
             **Published to:**
-            - npm Registry: https://www.npmjs.com/package/@rotesblatt/hex-tractor-api-client
-            - Maven Central: https://central.sonatype.com/artifact/io.github.rotesblatt/hex-tractor-api-client
+            - npm Registry: https://www.npmjs.com/package/@rotesblatt/hex-tractor-data-api
+            - Maven Central: https://central.sonatype.com/artifact/io.github.rotesblatt/hex-tractor-data-api
           draft: false
           prerelease: ${{ contains(needs.validate.outputs.version, '-') }}
           files: artifacts/*
