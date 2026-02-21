@@ -5,7 +5,7 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "generate": "mkdirp generated/typescript && openapi-zod-client ./openApi/hex-tractor-open-api.yml --export-schemas --export-types -o ./generated/typescript/api.ts",
+        "generate": "node generate-apis.js",
         "build": "npm run generate && tsc",
         "clean": "rimraf generated/typescript dist",
         "prepare": "npm run build"

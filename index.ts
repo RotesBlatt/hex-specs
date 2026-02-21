@@ -1,3 +1,3 @@
-// Re-export everything from the generated API client
-export * from './generated/typescript/api';
+// Re-export everything from all generated API clients
+export * from './generated/typescript';
 

@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
     kotlin("multiplatform") version "2.2.21"
@@ -77,54 +78,95 @@ kotlin {
     }
 }
 
-// OpenAPI Generator Configuration
-openApiGenerate {
-    generatorName.set("kotlin")
-    inputSpec.set("$rootDir/openApi/hex-tractor-open-api.yml")
-    outputDir.set("${layout.buildDirectory.get().asFile}/generated")
-    apiPackage.set("com.hextractor.api")
-    modelPackage.set("com.hextractor.api.model")
-    invokerPackage.set("com.hextractor.api.client")
+// Automatically find all OpenAPI spec files in the openApi directory
+val openApiDir = file("$rootDir/openApi")
+val openApiFiles = openApiDir.listFiles { file -> 
+    file.extension in listOf("yml", "yaml") 
+}?.toList() ?: emptyList()
 
-    configOptions.set(
+// Dynamically create generation tasks for each OpenAPI file
+val generationTasks = openApiFiles.map { specFile ->
+    // Derive a clean name from the file (e.g., "hex-tractor-open-api.yml" -> "hextractor")
+    val baseName = specFile.nameWithoutExtension
+        .replace("-open-api", "")
+        .replace("_open_api", "")
+        .replace("-api", "")
+        .replace("_api", "")
+    
+    // Create camelCase name for task (e.g., "hex-tractor" -> "hexTractor")
+    val taskName = baseName.split("-", "_")
+        .mapIndexed { index, part -> 
+            if (index == 0) part.lowercase() 
+            else part.replaceFirstChar { it.uppercase() }
+        }
+        .joinToString("")
+    
+    // Create dot-separated package name (e.g., "hex-tractor" -> "hextractor")  
+    val packageName = baseName.replace("-", "").replace("_", "").lowercase()
+    
+    val generateTask = tasks.register<GenerateTask>("generate${taskName.replaceFirstChar { it.uppercase() }}Api") {
+        generatorName.set("kotlin")
+        inputSpec.set(specFile.absolutePath)
+        outputDir.set("${layout.buildDirectory.get().asFile}/generated/$taskName")
+        apiPackage.set("io.$packageName.api")
+        modelPackage.set("io.$packageName.model")
+        invokerPackage.set("io.$packageName.client")
+
+        configOptions.set(
             mapOf(
-                    "library" to "multiplatform",
-                    "dateLibrary" to "kotlinx-datetime",
-                    "useCoroutines" to "true",
-                    "enumPropertyNaming" to "UPPERCASE",
-                    "collectionType" to "list"
+                "library" to "multiplatform",
+                "dateLibrary" to "kotlinx-datetime",
+                "useCoroutines" to "true",
+                "enumPropertyNaming" to "UPPERCASE",
+                "collectionType" to "list",
+                "packageName" to "io.$packageName"
             )
-    )
+        )
+    }
+    generateTask
 }
 
-// Add generated sources to Kotlin source sets
+// Add all generated sources to Kotlin source sets
 kotlin.sourceSets.getByName("commonMain") {
-    kotlin.srcDir("${layout.buildDirectory.get().asFile}/generated/src/main/kotlin")
+    openApiFiles.forEach { specFile ->
+        val baseName = specFile.nameWithoutExtension
+            .replace("-open-api", "")
+            .replace("_open_api", "")
+            .replace("-api", "")
+            .replace("_api", "")
+        val taskName = baseName.split("-", "_")
+            .mapIndexed { idx, part -> 
+                if (idx == 0) part.lowercase() 
+                else part.replaceFirstChar { it.uppercase() }
+            }
+            .joinToString("")
+        kotlin.srcDir("${layout.buildDirectory.get().asFile}/generated/$taskName/src/main/kotlin")
+    }
 }
 
 // Ensure OpenAPI generation runs before compilation and source jar creation
 afterEvaluate {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        dependsOn(tasks.named("openApiGenerate"))
+        generationTasks.forEach { apiGen -> dependsOn(apiGen) }
     }
-    // Ensure all klib compilation tasks depend on openApiGenerate
+    // Ensure all klib compilation tasks depend on all OpenAPI generation tasks
     tasks.matching { it.name.endsWith("Klibrary") }.configureEach {
-        dependsOn(tasks.named("openApiGenerate"))
+        generationTasks.forEach { dependsOn(it) }
     }
     tasks.matching { it.name.contains("sourcesJar") }.configureEach {
-        dependsOn(tasks.named("openApiGenerate"))
+        generationTasks.forEach { dependsOn(it) }
     }
     tasks.matching { it.name.contains("SourcesJar") }.configureEach {
-        dependsOn(tasks.named("openApiGenerate"))
+        generationTasks.forEach { dependsOn(it) }
     }
     tasks.matching { it.name.contains("extractDeepLinksForAar") }.configureEach {
-        dependsOn(tasks.named("openApiGenerate"))
+        generationTasks.forEach { dependsOn(it) }
     }
     tasks.matching { it.name.contains("merge") }.configureEach {
-        dependsOn(tasks.named("openApiGenerate"))
+        generationTasks.forEach { dependsOn(it) }
     }
     tasks.matching { it.name.contains("package") }.configureEach {
-        dependsOn(tasks.named("openApiGenerate"))
+        generationTasks.forEach { dependsOn(it) }
     }
     // Ensure metadata generation and publication tasks depend on assemble
     tasks.matching { it.name.startsWith("generateMetadataFileFor") && it.name.endsWith("Publication") }.configureEach {
@@ -147,7 +189,7 @@ afterEvaluate {
 
     tasks.matching { it.name == "prepareAndroidMainArtProfile" || it.name == "compileCommonMainKotlinMetadata" || it.name == "compileKotlinIosArm64" || it.name == "compileKotlinIosSimulatorArm64" || it.name == "compileKotlinIosX64" || it.name == "compileAndroidMain" }
     .configureEach {
-        dependsOn(tasks.named("openApiGenerate"))
+        generationTasks.forEach { dependsOn(it) }
     }
 }
 
@@ -202,7 +244,7 @@ tasks.withType<Sign>().configureEach { onlyIf { System.getenv("GPG_PRIVATE_KEY")
 
 // Task to create deployment bundle for Central Portal
 tasks.register<Zip>("createDeploymentBundle") {
-    dependsOn(tasks.named("openApiGenerate"))
+    generationTasks.forEach { dependsOn(it) }
     dependsOn(tasks.named("publishAllPublicationsToLocalBuildRepository"))
     archiveFileName.set("deployment-bundle-${project.version}.zip")
     destinationDirectory.set(layout.buildDirectory.dir("distributions"))
