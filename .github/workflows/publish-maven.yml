@@ -36,6 +36,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Determine version
+        id: get-version
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          else
+            echo "version=" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -48,9 +59,9 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Update version if specified
-        if: ${{ github.event.inputs.version != '' }}
+        if: ${{ steps.get-version.outputs.version != '' }}
         run: |
-          mvn versions:set -DnewVersion=${{ github.event.inputs.version }} -DgenerateBackupPoms=false
+          mvn versions:set -DnewVersion=${{ steps.get-version.outputs.version }} -DgenerateBackupPoms=false
 
       - name: Generate Kotlin client
         run: mvn clean generate-sources
