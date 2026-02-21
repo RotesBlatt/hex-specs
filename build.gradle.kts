@@ -7,7 +7,6 @@ plugins {
     id("org.openapi.generator") version "7.20.0"
     id("maven-publish")
     id("signing")
-    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
 
 group = "io.github.rotesblatt"
@@ -125,25 +124,8 @@ publishing {
 
     repositories {
         maven {
-            name = "OSSRH"
-            val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
-            credentials {
-                username = System.getenv("MAVEN_USERNAME")
-                password = System.getenv("MAVEN_PASSWORD")
-            }
-        }
-    }
-}
-
-nexusPublishing {
-    repositories {
-        sonatype {
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-            username.set(System.getenv("MAVEN_USERNAME"))
-            password.set(System.getenv("MAVEN_PASSWORD"))
+            name = "LocalBuild"
+            url = uri(layout.buildDirectory.dir("repo"))
         }
     }
 }
@@ -155,3 +137,11 @@ signing {
 
 // Only sign if publishing
 tasks.withType<Sign>().configureEach { onlyIf { System.getenv("GPG_PRIVATE_KEY") != null } }
+
+// Task to create deployment bundle for Central Portal
+tasks.register<Zip>("createDeploymentBundle") {
+    dependsOn(tasks.named("publishAllPublicationsToLocalBuildRepository"))
+    archiveFileName.set("deployment-bundle-${project.version}.zip")
+    destinationDirectory.set(layout.buildDirectory.dir("distributions"))
+    from(layout.buildDirectory.dir("repo"))
+}

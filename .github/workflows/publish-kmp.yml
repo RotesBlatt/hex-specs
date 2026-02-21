@@ -67,11 +67,9 @@ jobs:
       - name: Accept Android licenses
         run: yes | sdkmanager --licenses || true
 
-      - name: Publish to Maven Central
-        run: gradle publishToSonatype closeAndReleaseSonatypeStagingRepository --no-daemon
+      - name: Build and create deployment bundle
+        run: gradle createDeploymentBundle --no-daemon
         env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
@@ -79,11 +77,19 @@ jobs:
         id: project-version
         run: echo "version=$(grep 'version = ' build.gradle.kts | sed 's/version = \"\(.*\)\"/\1/')" >> $GITHUB_OUTPUT
 
+      - name: Upload bundle to Central Portal
+        run: |
+          BUNDLE_PATH=$(find build/distributions -name "deployment-bundle-*.zip" | head -n 1)
+          curl --request POST \
+            --verbose \
+            --user '${{ secrets.OSSRH_USERNAME }}:${{ secrets.OSSRH_PASSWORD }}' \
+            --form bundle=@"${BUNDLE_PATH}" \
+            'https://central.sonatype.com/api/v1/publisher/upload?name=hex-tractor-${{ steps.project-version.outputs.version }}&publishingType=AUTOMATIC'
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: maven-artifacts
           path: |
-            build/libs/*.jar
-            build/publications/**/*.module
+            build/distributions/deployment-bundle-*.zip
           retention-days: 30
