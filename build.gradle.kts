@@ -1,9 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("multiplatform") version "1.9.22"
-    kotlin("plugin.serialization") version "1.9.22"
-    id("com.android.library") version "8.1.4"
+    kotlin("multiplatform") version "2.2.21"
+    kotlin("plugin.serialization") version "2.2.21"
+    id("com.android.library") version "8.13.2"
     id("org.openapi.generator") version "7.3.0"
     id("maven-publish")
     id("signing")
@@ -32,7 +32,13 @@ android {
 
 kotlin {
     androidTarget {
-        compilations.all { compilerOptions.configure { jvmTarget.set(JvmTarget.JVM_17) } }
+        compilations.all {
+            compileTaskProvider.configure {
+                compilerOptions {
+                    jvmTarget.set(JvmTarget.JVM_17)
+                }
+            }
+        }
         publishLibraryVariants("release")
     }
 
@@ -62,7 +68,7 @@ kotlin {
 openApiGenerate {
     generatorName.set("kotlin")
     inputSpec.set("$rootDir/openApi/hex-tractor-open-api.yml")
-    outputDir.set("$buildDir/generated")
+    outputDir.set("${layout.buildDirectory.get().asFile}/generated")
     apiPackage.set("com.hextractor.api")
     modelPackage.set("com.hextractor.api.model")
     invokerPackage.set("com.hextractor.api.client")
@@ -80,7 +86,7 @@ openApiGenerate {
 
 // Add generated sources to Kotlin source sets
 kotlin.sourceSets.getByName("commonMain") {
-    kotlin.srcDir("$buildDir/generated/src/commonMain/kotlin")
+    kotlin.srcDir("${layout.buildDirectory.get().asFile}/generated/src/commonMain/kotlin")
 }
 
 // Publishing configuration
