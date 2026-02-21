@@ -596,8 +596,6 @@ components:
       required:
         - generalInfo
         - leagueEntries
-        - currentGame
-
     spectator-v5.CurrentGameInfo:
       type: object
       title: CurrentGameInfo
@@ -873,7 +871,6 @@ components:
         - spell1Id
         - spell2Id
         - gameCustomizationObjects
-        - puuid
     spectator-v5.Perks:
       type: object
       title: Perks
