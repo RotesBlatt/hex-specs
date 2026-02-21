@@ -89,6 +89,25 @@ kotlin.sourceSets.getByName("commonMain") {
     kotlin.srcDir("${layout.buildDirectory.get().asFile}/generated/src/commonMain/kotlin")
 }
 
+// Ensure OpenAPI generation runs before compilation and source jar creation
+afterEvaluate {
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        dependsOn(tasks.named("openApiGenerate"))
+    }
+    tasks.matching { it.name.contains("SourcesJar") }.configureEach {
+        dependsOn(tasks.named("openApiGenerate"))
+    }
+    tasks.matching { it.name.contains("extractDeepLinksForAarRelease") }.configureEach {
+        dependsOn(tasks.named("openApiGenerate"))
+    }
+    tasks.matching { it.name.contains("packageReleaseResources") }.configureEach {
+        dependsOn(tasks.named("openApiGenerate"))
+    }
+    tasks.matching { it.name.contains("mergeReleaseAssets") }.configureEach {
+        dependsOn(tasks.named("openApiGenerate"))
+    }
+}
+
 // Publishing configuration
 publishing {
     publications {
@@ -141,7 +160,7 @@ tasks.withType<Sign>().configureEach { onlyIf { System.getenv("GPG_PRIVATE_KEY")
 // Task to create deployment bundle for Central Portal
 tasks.register<Zip>("createDeploymentBundle") {
     dependsOn(tasks.named("openApiGenerate"))
-    dependsOn(tasks.named("publishAndroidReleasePublicationToLocalBuildRepository"))
+    dependsOn(tasks.named("publishAllPublicationsToLocalBuildRepository"))
     archiveFileName.set("deployment-bundle-${project.version}.zip")
     destinationDirectory.set(layout.buildDirectory.dir("distributions"))
     from(layout.buildDirectory.dir("repo"))
