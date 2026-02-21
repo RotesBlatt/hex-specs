@@ -68,7 +68,7 @@ jobs:
         run: yes | sdkmanager --licenses || true
 
       - name: Build and create deployment bundle
-        run: gradle publishAndroidReleasePublicationToLocalBuildRepository --no-daemon
+        run: gradle createDeploymentBundle --no-daemon
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
