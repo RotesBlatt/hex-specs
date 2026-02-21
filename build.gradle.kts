@@ -42,9 +42,16 @@ kotlin {
         publishLibraryVariants("release")
     }
 
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
+   listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach {
+        it.binaries.framework {
+            baseName = "shared"
+            isStatic = true
+        }
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -62,6 +69,7 @@ kotlin {
             dependencies { implementation("io.ktor:ktor-client-android:2.3.7") }
         }
         
+        
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -71,6 +79,7 @@ kotlin {
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
         }
+        
     }
 }
 
