@@ -104,7 +104,6 @@ val generationTasks = openApiFiles.map { specFile ->
     
     val generateTask = tasks.register<GenerateTask>("generate${taskName.replaceFirstChar { it.uppercase() }}Api") {
         generatorName.set("kotlin")
-        library.set("multiplatform")
         inputSpec.set(specFile.absolutePath)
         outputDir.set("${layout.buildDirectory.get().asFile}/generated/$taskName")
 
@@ -117,6 +116,7 @@ val generationTasks = openApiFiles.map { specFile ->
 
         configOptions.set(
             mapOf(
+                "library" to "multiplatform",
                 "dateLibrary" to "kotlinx-datetime",
                 "useCoroutines" to "true",
                 "enumPropertyNaming" to "UPPERCASE",
