@@ -44,7 +44,7 @@ This file provides a step-by-step checklist to help you set up publishing to npm
   - [ ] Export private key
 - [ ] Add secrets to GitHub:
   - [ ] `OSSRH_USERNAME`
-  - [ ] `OSSRH_TOKEN`
+  - [ ] `OSSRH_PASSWORD`
   - [ ] `GPG_PRIVATE_KEY`
   - [ ] `GPG_PASSPHRASE`
 
@@ -87,7 +87,7 @@ All secrets go to: **Settings → Secrets and variables → Actions → New repo
 |------------|--------------|----------|
 | `NPM_TOKEN` | npm publishing | https://www.npmjs.com/ → Access Tokens |
 | `OSSRH_USERNAME` | Maven Central | Your Sonatype username |
-| `OSSRH_TOKEN` | Maven Central | https://central.sonatype.com/account |
+| `OSSRH_PASSWORD` | Maven Central | https://central.sonatype.com/account |
 | `GPG_PRIVATE_KEY` | Maven Central | Your exported GPG private key |
 | `GPG_PASSPHRASE` | Maven Central | GPG key passphrase |
 

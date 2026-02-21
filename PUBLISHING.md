@@ -148,7 +148,7 @@ Add the following secrets to your GitHub repository:
 |------------|-------------|------------|
 | `NPM_TOKEN` | npm access token | From npm (see npm setup above) |
 | `OSSRH_USERNAME` | Sonatype username | Your Sonatype account username |
-| `OSSRH_TOKEN` | Sonatype token | Generate at https://central.sonatype.com/account |
+| `OSSRH_PASSWORD` | Sonatype password | Generate at https://central.sonatype.com/account |
 | `GPG_PRIVATE_KEY` | GPG private key | Content of `private-key.asc` (entire file including headers) |
 | `GPG_PASSPHRASE` | GPG key passphrase | The passphrase you set when creating the GPG key |
 
@@ -274,7 +274,7 @@ Or search: https://search.maven.org/search?q=g:com.hextractor
 ### Maven Central Publishing Issues
 
 **Error: "401 Unauthorized"**
-- Verify `OSSRH_USERNAME` and `OSSRH_TOKEN` are correct
+- Verify `OSSRH_USERNAME` and `OSSRH_PASSWORD` are correct
 - Generate a new token at https://central.sonatype.com/account
 
 **Error: "Failed to sign artifacts"**

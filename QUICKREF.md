@@ -233,7 +233,7 @@ Add to GitHub Settings → Secrets → Actions:
 |--------|---------|
 | `NPM_TOKEN` | npm authentication |
 | `OSSRH_USERNAME` | Maven Central username |
-| `OSSRH_TOKEN` | Maven Central token |
+| `OSSRH_PASSWORD` | Maven Central password |
 | `GPG_PRIVATE_KEY` | Sign Maven artifacts |
 | `GPG_PASSPHRASE` | GPG key password |
 
