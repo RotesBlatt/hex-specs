@@ -162,31 +162,29 @@ jobs:
           path: artifacts
 
       - name: Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.validate.outputs.version }}
-          release_name: Release v${{ needs.validate.outputs.version }}
+          name: Release v${{ needs.validate.outputs.version }}
           body: |
             ## 🚀 Release v${{ needs.validate.outputs.version }}
 
             ### 📦 npm Package
             ```bash
-            npm install @hextractor/api-client@${{ needs.validate.outputs.version }}
+            npm install @rotesblatt/hex-tractor-api-client@${{ needs.validate.outputs.version }}
             ```
 
             ### 📦 Maven Artifact
             ```xml
             <dependency>
-                <groupId>com.hextractor</groupId>
+                <groupId>io.github.rotesblatt</groupId>
                 <artifactId>hex-tractor-api-client</artifactId>
                 <version>${{ needs.validate.outputs.version }}</version>
             </dependency>
             ```
 
             ```kotlin
-            implementation("com.hextractor:hex-tractor-api-client:${{ needs.validate.outputs.version }}")
+            implementation("io.github.rotesblatt:hex-tractor-api-client:${{ needs.validate.outputs.version }}")
             ```
 
             ### 📝 Changes
@@ -195,7 +193,8 @@ jobs:
             ---
 
             **Published to:**
-            - npm Registry: https://www.npmjs.com/package/@hextractor/api-client
-            - Maven Central: https://central.sonatype.com/artifact/com.hextractor/hex-tractor-api-client
+            - npm Registry: https://www.npmjs.com/package/@rotesblatt/hex-tractor-api-client
+            - Maven Central: https://central.sonatype.com/artifact/io.github.rotesblatt/hex-tractor-api-client
           draft: false
           prerelease: ${{ contains(needs.validate.outputs.version, '-') }}
+          files: artifacts/*
