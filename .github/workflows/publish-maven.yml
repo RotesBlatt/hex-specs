@@ -22,9 +22,6 @@ on:
         description: "Version to publish (leave empty to use pom.xml version)"
         required: false
         type: string
-  push:
-    tags:
-      - "v*"
 
 jobs:
   publish-maven:
