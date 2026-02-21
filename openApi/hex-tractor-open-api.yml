@@ -592,9 +592,11 @@ components:
         currentGame:
           $ref: "#/components/schemas/spectator-v5.CurrentGameInfo"
           x-type: CurrentGameInfo
+          nullable: true
       required:
         - generalInfo
         - leagueEntries
+        - currentGame
 
     spectator-v5.CurrentGameInfo:
       type: object
@@ -843,6 +845,7 @@ components:
           type: string
           x-type: string
           description: "The encrypted puuid of this participant. This field is null when the player is anonym."
+          nullable: true
         spell1Id:
           type: integer
           format: int64
@@ -870,6 +873,7 @@ components:
         - spell1Id
         - spell2Id
         - gameCustomizationObjects
+        - puuid
     spectator-v5.Perks:
       type: object
       title: Perks
