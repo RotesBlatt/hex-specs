@@ -99,12 +99,16 @@ openApiGenerate {
 
 // Add generated sources to Kotlin source sets
 kotlin.sourceSets.getByName("commonMain") {
-    kotlin.srcDir("${layout.buildDirectory.get().asFile}/generated/src/commonMain/kotlin")
+    kotlin.srcDir("${layout.buildDirectory.get().asFile}/generated/src/main/kotlin")
 }
 
 // Ensure OpenAPI generation runs before compilation and source jar creation
 afterEvaluate {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        dependsOn(tasks.named("openApiGenerate"))
+    }
+    // Ensure all klib compilation tasks depend on openApiGenerate
+    tasks.matching { it.name.endsWith("Klibrary") }.configureEach {
         dependsOn(tasks.named("openApiGenerate"))
     }
     tasks.matching { it.name.contains("SourcesJar") }.configureEach {
@@ -125,6 +129,17 @@ afterEvaluate {
     }
     tasks.matching { it.name.startsWith("publish") && it.name.contains("Publication") }.configureEach {
         dependsOn(tasks.named("assemble"))
+    }
+    
+    // Ensure iOS klib tasks run before their corresponding metadata generation
+    tasks.matching { it.name.contains("iosArm64") && it.name.startsWith("generateMetadataFileFor") }.configureEach {
+        tasks.findByName("iosArm64MainKlibrary")?.let { dependsOn(it) }
+    }
+    tasks.matching { it.name.contains("iosX64") && it.name.startsWith("generateMetadataFileFor") }.configureEach {
+        tasks.findByName("iosX64MainKlibrary")?.let { dependsOn(it) }
+    }
+    tasks.matching { it.name.contains("iosSimulatorArm64") && it.name.startsWith("generateMetadataFileFor") }.configureEach {
+        tasks.findByName("iosSimulatorArm64MainKlibrary")?.let { dependsOn(it) }
     }
 }
 
