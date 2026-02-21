@@ -140,6 +140,7 @@ tasks.withType<Sign>().configureEach { onlyIf { System.getenv("GPG_PRIVATE_KEY")
 
 // Task to create deployment bundle for Central Portal
 tasks.register<Zip>("createDeploymentBundle") {
+    dependsOn(tasks.named("openApiGenerate"))
     dependsOn(tasks.named("publishAndroidReleasePublicationToLocalBuildRepository"))
     archiveFileName.set("deployment-bundle-${project.version}.zip")
     destinationDirectory.set(layout.buildDirectory.dir("distributions"))
