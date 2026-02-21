@@ -33,22 +33,6 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      - name: Import GPG key
-        run: |
-          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
-          gpg --list-secret-keys --keyid-format LONG
-
-          # Configure GPG for non-interactive use
-          mkdir -p ~/.gnupg
-          chmod 700 ~/.gnupg
-          echo "use-agent" >> ~/.gnupg/gpg.conf
-          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
-          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
-          chmod 600 ~/.gnupg/gpg.conf
-          chmod 600 ~/.gnupg/gpg-agent.conf
-          gpgconf --kill gpg-agent
-          gpgconf --launch gpg-agent
-
       - name: Update version if specified
         if: ${{ github.event.inputs.version != '' }}
         run: |
