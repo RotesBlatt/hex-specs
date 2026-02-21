@@ -24,7 +24,7 @@ on:
         type: string
 
 jobs:
-  publish-maven:
+  publish-kmp:
     runs-on: ubuntu-latest
     permissions:
       contents: read
