@@ -42,16 +42,9 @@ kotlin {
         publishLibraryVariants("release")
     }
 
-   listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
-            baseName = "shared"
-            isStatic = true
-        }
-    }
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
     sourceSets {
         val commonMain by getting {
@@ -78,6 +71,7 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
+            dependencies { implementation("io.ktor:ktor-client-darwin:2.3.7")}
         }
         
     }
@@ -125,11 +119,10 @@ afterEvaluate {
     tasks.matching { it.name.contains("package") }.configureEach {
         dependsOn(tasks.named("openApiGenerate"))
     }
-    // Ensure metadata generation depends on all link and klib tasks
+    // Ensure metadata generation and publication tasks depend on assemble
     tasks.matching { it.name.startsWith("generateMetadataFileFor") && it.name.endsWith("Publication") }.configureEach {
-        dependsOn(tasks.matching { it.name.contains("link") || it.name.contains("Klibrary") })
+        dependsOn(tasks.named("assemble"))
     }
-    // Ensure all publication tasks depend on assemble
     tasks.matching { it.name.startsWith("publish") && it.name.contains("Publication") }.configureEach {
         dependsOn(tasks.named("assemble"))
     }
