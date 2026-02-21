@@ -59,11 +59,11 @@ jobs:
           body: |
             ## npm Package Published
 
-            📦 Package: `@hextractor/api-client@${{ steps.package-version.outputs.version }}`
+            📦 Package: `@rotesblatt/hex-tractor-data-api@${{ steps.package-version.outputs.version }}`
 
             ### Installation
             ```bash
-            npm install @hextractor/api-client@${{ steps.package-version.outputs.version }}
+            npm install @rotesblatt/hex-tractor-data-api@${{ steps.package-version.outputs.version }}
             ```
 
             ### Changes

@@ -1,5 +1,5 @@
 {
-    "name": "@rotesblatt/api-client",
+    "name": "@rotesblatt/hex-tractor-data-api",
     "version": "1.0.0",
     "description": "Generated TypeScript client for Hex-Tractor API",
     "main": "dist/index.js",

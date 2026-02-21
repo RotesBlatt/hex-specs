@@ -49,16 +49,6 @@ jobs:
           gpgconf --kill gpg-agent
           gpgconf --launch gpg-agent
 
-      - name: Create settings-security.xml
-        run: |
-          mkdir -p ~/.m2
-          cat > ~/.m2/settings-security.xml <<'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <settingsSecurity>
-            <master>{jSMOWnoPFgsHVpMvz5VrIt5kRbzGpI8u+9EF1iFQyJQ=}</master>
-          </settingsSecurity>
-          EOF
-
       - name: Update version if specified
         if: ${{ github.event.inputs.version != '' }}
         run: |
@@ -66,9 +56,6 @@ jobs:
 
       - name: Generate Kotlin client
         run: mvn clean generate-sources
-
-      - name: Build and sign artifacts
-        run: mvn -B package --no-transfer-progress -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}"
 
       - name: Publish to Maven Central
         run: mvn -B deploy --no-transfer-progress -DskipTests -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}"
