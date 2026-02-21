@@ -67,9 +67,6 @@ jobs:
       - name: Accept Android licenses
         run: yes | sdkmanager --licenses || true
 
-      - name: Generate Kotlin client and build
-        run: gradle openApiGenerate build --no-daemon
-
       - name: Publish to Maven Central
         run: gradle publish --no-daemon
         env:
