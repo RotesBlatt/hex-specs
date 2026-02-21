@@ -72,9 +72,9 @@ jobs:
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  publish-maven:
+  publish-kmp:
     needs: validate
-    uses: ./.github/workflows/publish-maven.yml
+    uses: ./.github/workflows/publish-kmp.yml
     permissions:
       contents: read
     with:
@@ -86,7 +86,7 @@ jobs:
       GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
   create-release:
-    needs: [validate, publish-npm, publish-maven]
+    needs: [validate, publish-npm, publish-kmp]
     runs-on: ubuntu-latest
     permissions:
       contents: write
