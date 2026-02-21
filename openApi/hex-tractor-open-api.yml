@@ -634,7 +634,9 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/spectator-v5.BannedChampion"
+            x-type: BannedChampion
           description: "Banned champion information"
+          x-type: "List[BannedChampion]"
         gameQueueConfigId:
           type: integer
           format: int64
@@ -642,14 +644,14 @@ components:
           description: "The queue type (queue types are documented on the Game Constants page)"
           x-enum: queue
         observers:
-          allOf:
-            - $ref: "#/components/schemas/spectator-v5.Observer"
+          $ref: "#/components/schemas/spectator-v5.Observer"
           x-type: Observer
           description: "The observer information"
         participants:
           type: array
           items:
             $ref: "#/components/schemas/spectator-v5.CurrentGameParticipant"
+            x-type: CurrentGameParticipant
           x-type: "List[CurrentGameParticipant]"
           description: "The participant information"
       required:
