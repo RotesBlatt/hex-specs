@@ -114,6 +114,9 @@ afterEvaluate {
     tasks.matching { it.name.contains("sourcesJar") }.configureEach {
         dependsOn(tasks.named("openApiGenerate"))
     }
+    tasks.matching { it.name.contains("SourcesJar") }.configureEach {
+        dependsOn(tasks.named("openApiGenerate"))
+    }
     tasks.matching { it.name.contains("extractDeepLinksForAar") }.configureEach {
         dependsOn(tasks.named("openApiGenerate"))
     }
