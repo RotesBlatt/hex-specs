@@ -97,13 +97,13 @@ afterEvaluate {
     tasks.matching { it.name.contains("SourcesJar") }.configureEach {
         dependsOn(tasks.named("openApiGenerate"))
     }
-    tasks.matching { it.name.contains("extractDeepLinksForAarRelease") }.configureEach {
+    tasks.matching { it.name.contains("extractDeepLinksForAar") }.configureEach {
         dependsOn(tasks.named("openApiGenerate"))
     }
-    tasks.matching { it.name.contains("packageReleaseResources") }.configureEach {
+    tasks.matching { it.name.contains("merge") }.configureEach {
         dependsOn(tasks.named("openApiGenerate"))
     }
-    tasks.matching { it.name.contains("mergeReleaseAssets") }.configureEach {
+    tasks.matching { it.name.contains("package") }.configureEach {
         dependsOn(tasks.named("openApiGenerate"))
     }
     // Ensure all publication tasks depend on assemble to build all artifacts first
