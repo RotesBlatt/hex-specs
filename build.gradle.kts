@@ -141,6 +141,11 @@ afterEvaluate {
     tasks.matching { it.name.contains("iosSimulatorArm64") && it.name.startsWith("generateMetadataFileFor") }.configureEach {
         tasks.findByName("iosSimulatorArm64MainKlibrary")?.let { dependsOn(it) }
     }
+
+    tasks.matching { it.name == "prepareAndroidMainArtProfile" || it.name == "compileCommonMainKotlinMetadata" || it.name == "compileKotlinIosArm64" || it.name == "compileKotlinIosSimulatorArm64" || it.name == "compileKotlinIosX64" || it.name == "compileAndroidMain" }
+    .configureEach {
+        dependsOn(tasks.named("openApiGenerate"))
+    }
 }
 
 // Publishing configuration
