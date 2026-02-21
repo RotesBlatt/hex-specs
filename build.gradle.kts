@@ -7,6 +7,7 @@ plugins {
     id("org.openapi.generator") version "7.20.0"
     id("maven-publish")
     id("signing")
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
 
 group = "io.github.rotesblatt"
@@ -32,7 +33,13 @@ android {
 
 kotlin {
     androidTarget {
-        compilations.all { compilerOptions.configure { jvmTarget.set(JvmTarget.JVM_17) } }
+        compilations.all {
+            compileTaskProvider.configure {
+                compilerOptions {
+                    jvmTarget.set(JvmTarget.JVM_17)
+                }
+            }
+        }
         publishLibraryVariants("release")
     }
 
@@ -62,7 +69,7 @@ kotlin {
 openApiGenerate {
     generatorName.set("kotlin")
     inputSpec.set("$rootDir/openApi/hex-tractor-open-api.yml")
-    outputDir.set("$buildDir/generated")
+    outputDir.set("${layout.buildDirectory.get().asFile}/generated")
     apiPackage.set("com.hextractor.api")
     modelPackage.set("com.hextractor.api.model")
     invokerPackage.set("com.hextractor.api.client")
@@ -80,7 +87,7 @@ openApiGenerate {
 
 // Add generated sources to Kotlin source sets
 kotlin.sourceSets.getByName("commonMain") {
-    kotlin.srcDir("$buildDir/generated/src/commonMain/kotlin")
+    kotlin.srcDir("${layout.buildDirectory.get().asFile}/generated/src/commonMain/kotlin")
 }
 
 // Publishing configuration
@@ -126,6 +133,17 @@ publishing {
                 username = System.getenv("MAVEN_USERNAME")
                 password = System.getenv("MAVEN_PASSWORD")
             }
+        }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+            username.set(System.getenv("MAVEN_USERNAME"))
+            password.set(System.getenv("MAVEN_PASSWORD"))
         }
     }
 }

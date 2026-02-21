@@ -60,7 +60,7 @@ jobs:
         if: ${{ steps.get-version.outputs.version != '' }}
         run: |
           sed -i "s/version = \".*\"/version = \"${{ steps.get-version.outputs.version }}\"/" build.gradle.kts
-        
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
@@ -68,7 +68,7 @@ jobs:
         run: yes | sdkmanager --licenses || true
 
       - name: Publish to Maven Central
-        run: gradle publish --no-daemon
+        run: gradle publishToSonatype closeAndReleaseSonatypeStagingRepository --no-daemon
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
