@@ -67,6 +67,9 @@ jobs:
       - name: Accept Android licenses
         run: yes | sdkmanager --licenses || true
 
+      - name: Assemble all artifacts
+        run: gradle assemble --no-daemon
+
       - name: Build and create deployment bundle
         run: gradle createDeploymentBundle --no-daemon
         env:

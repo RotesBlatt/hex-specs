@@ -55,6 +55,8 @@ Thumbs.db
 .kotlin/
 .gradle/
 build/
+gradlew.bat
+gradle/
 
 # Security - Never commit these!
 *.asc
