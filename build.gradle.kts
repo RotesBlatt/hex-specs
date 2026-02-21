@@ -106,6 +106,10 @@ afterEvaluate {
     tasks.matching { it.name.contains("mergeReleaseAssets") }.configureEach {
         dependsOn(tasks.named("openApiGenerate"))
     }
+    // Ensure all publication tasks depend on compilation
+    tasks.matching { it.name.startsWith("generateMetadataFileFor") && it.name.endsWith("Publication") }.configureEach {
+        dependsOn(tasks.matching { it.name.contains("compileKotlin") })
+    }
 }
 
 // Publishing configuration
