@@ -2,10 +2,10 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-    kotlin("multiplatform") version "2.2.21"
-    kotlin("plugin.serialization") version "2.2.21"
+    kotlin("multiplatform") version "2.3.0"
+    kotlin("plugin.serialization") version "2.3.0"
     id("com.android.library") version "8.13.2"
-    id("org.openapi.generator") version "7.20.0"
+    id("org.openapi.generator") version "7.19.0"
     id("maven-publish")
     id("signing")
 }
@@ -50,17 +50,15 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
-                implementation("io.ktor:ktor-client-core:2.3.7")
-                implementation("io.ktor:ktor-client-content-negotiation:2.3.7")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
+                implementation("io.ktor:ktor-client-core:3.4.0")
+                implementation("io.ktor:ktor-client-content-negotiation:3.4.0")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:3.4.0")
             }
         }
 
-        val commonTest by getting { dependencies { implementation(kotlin("test")) } }
-
         val androidMain by getting {
-            dependencies { implementation("io.ktor:ktor-client-android:2.3.7") }
+            dependencies { implementation("io.ktor:ktor-client-android:3.4.0") }
         }
         
         
@@ -72,7 +70,7 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
-            dependencies { implementation("io.ktor:ktor-client-darwin:2.3.7")}
+            dependencies { implementation("io.ktor:ktor-client-darwin:3.4.0")}
         }
         
     }
@@ -106,15 +104,19 @@ val generationTasks = openApiFiles.map { specFile ->
     
     val generateTask = tasks.register<GenerateTask>("generate${taskName.replaceFirstChar { it.uppercase() }}Api") {
         generatorName.set("kotlin")
+        library.set("multiplatform")
         inputSpec.set(specFile.absolutePath)
         outputDir.set("${layout.buildDirectory.get().asFile}/generated/$taskName")
+
         apiPackage.set("io.$packageName.api")
         modelPackage.set("io.$packageName.model")
         invokerPackage.set("io.$packageName.client")
 
+        generateApiTests.set(false)
+        generateModelTests.set(false)
+
         configOptions.set(
             mapOf(
-                "library" to "multiplatform",
                 "dateLibrary" to "kotlinx-datetime",
                 "useCoroutines" to "true",
                 "enumPropertyNaming" to "UPPERCASE",
