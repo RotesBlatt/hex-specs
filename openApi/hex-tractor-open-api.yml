@@ -540,6 +540,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/league-v4.LeagueItemDTO"
+            x-type: LeagueItemDTO
+          x-type: "List[LeagueItemDTO]"
       required:
         - queueType
         - tier
@@ -585,8 +587,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/league-v4.LeagueEntryDTO"
+            x-type: LeagueEntryDTO
+          x-type: "List[LeagueEntryDTO]"
         currentGame:
           $ref: "#/components/schemas/spectator-v5.CurrentGameInfo"
+          x-type: CurrentGameInfo
       required:
         - generalInfo
         - leagueEntries
