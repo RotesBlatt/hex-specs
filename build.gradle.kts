@@ -61,6 +61,16 @@ kotlin {
         val androidMain by getting {
             dependencies { implementation("io.ktor:ktor-client-android:2.3.7") }
         }
+        
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+        val iosMain by creating {
+            dependsOn(commonMain)
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
+        }
     }
 }
 
@@ -106,7 +116,10 @@ afterEvaluate {
     tasks.matching { it.name.contains("package") }.configureEach {
         dependsOn(tasks.named("openApiGenerate"))
     }
-    // Ensure all publication tasks depend on assemble to build all artifacts first
+    // Ensure metadata generation and publication tasks depend on assemble
+    tasks.matching { it.name.startsWith("generateMetadataFileFor") && it.name.endsWith("Publication") }.configureEach {
+        dependsOn(tasks.named("assemble"))
+    }
     tasks.matching { it.name.startsWith("publish") && it.name.contains("Publication") }.configureEach {
         dependsOn(tasks.named("assemble"))
     }
