@@ -126,9 +126,6 @@ jobs:
             implementation("io.github.rotesblatt:hex-tractor-data-api:${{ needs.validate.outputs.version }}")
             ```
 
-            ### 📝 Changes
-            See [CHANGELOG.md](CHANGELOG.md) for detailed changes.
-
             ---
 
             **Published to:**
