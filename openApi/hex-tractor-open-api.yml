@@ -446,6 +446,23 @@ paths:
             minimum: 1
             default: 10
           allowEmptyValue: true
+        - name: queueId
+          in: query
+          required: false
+          description: Filter matches by queue type (optional)
+          schema:
+            type: integer
+          examples:
+            solo_queue:
+              value: 420
+              description: Ranked Solo/Duo Queue on Summoners Rift
+            flex_queue:
+              value: 440
+              description: Ranked Flex Queue on Summoners Rift
+            aram_mayhem:
+              value: 2400
+              description: ARAM on Howling Abyss
+          allowEmptyValue: true
       responses:
         "200":
           description: OK - Match details retrieved successfully for the specified parameters.
