@@ -9,6 +9,8 @@ servers:
 paths:
   /account/{region}/{summonerName}/{tagLine}:
     get:
+      tags:
+        - Account
       summary: Get Riot account information by summoner name and tag line
       description: Retrieve Riot account details using the summoner name and tag line for a specific region
       parameters:
@@ -76,6 +78,8 @@ paths:
                 $ref: "#/components/schemas/simpleInternalError"
   /account/{region}/{puuid}:
     get:
+      tags:
+        - Account
       summary: Get Riot account information by puuid
       description: Retrieve Riot account details using the encrypted summoner ID for a specific region
       parameters:
@@ -131,6 +135,8 @@ paths:
                 $ref: "#/components/schemas/simpleInternalError"
   /leagues/{region}/{queue}/{tier}/{division}:
     get:
+      tags:
+        - Leagues
       summary: Get Riot league entries by queue, tier, and division
       description: Retrieve Riot league entries for a specific region, queue type, tier, and division
       parameters:
@@ -250,6 +256,8 @@ paths:
                 $ref: "#/components/schemas/simpleInternalError"
   /matches/match/{region}/{matchId}:
     get:
+      tags:
+        - Matches
       summary: Get Riot match details by match ID
       description: Retrieve Riot match details using the match ID for a specific region
       parameters:
@@ -306,6 +314,8 @@ paths:
                 $ref: "#/components/schemas/simpleInternalError"
   /matches/match-ids/{region}/{puuid}:
     get:
+      tags:
+        - Matches
       summary: Get Riot match IDs by player PUUID
       description: Retrieve a list of Riot match IDs for a specific player using their encrypted PUUID and region
       parameters:
@@ -385,6 +395,8 @@ paths:
                 $ref: "#/components/schemas/simpleInternalError"
   /matches/{region}/{puuid}:
     get:
+      tags:
+        - Matches
       summary: Get Riot match details by player PUUID
       description: Retrieve a list of Riot match details for a specific player using their encrypted PUUID and region
       parameters:
