@@ -9,6 +9,7 @@ servers:
 paths:
   /account/{region}/{summonerName}/{tagLine}:
     get:
+      operationId: getAccountBySummonerName
       tags:
         - Account
       summary: Get Riot account information by summoner name and tag line
@@ -78,6 +79,7 @@ paths:
                 $ref: "#/components/schemas/simpleInternalError"
   /account/{region}/{puuid}:
     get:
+      operationId: getAccountByPuuid
       tags:
         - Account
       summary: Get Riot account information by puuid
@@ -135,6 +137,7 @@ paths:
                 $ref: "#/components/schemas/simpleInternalError"
   /leagues/{region}/{queue}/{tier}/{division}:
     get:
+      operationId: getLeagueEntries
       tags:
         - Leagues
       summary: Get Riot league entries by queue, tier, and division
@@ -256,6 +259,7 @@ paths:
                 $ref: "#/components/schemas/simpleInternalError"
   /matches/match/{region}/{matchId}:
     get:
+      operationId: getMatchById
       tags:
         - Matches
       summary: Get Riot match details by match ID
@@ -314,6 +318,7 @@ paths:
                 $ref: "#/components/schemas/simpleInternalError"
   /matches/match-ids/{region}/{puuid}:
     get:
+      operationId: getMatchIdsByPuuid
       tags:
         - Matches
       summary: Get Riot match IDs by player PUUID
@@ -395,6 +400,7 @@ paths:
                 $ref: "#/components/schemas/simpleInternalError"
   /matches/{region}/{puuid}:
     get:
+      operationId: getMatchesByPuuid
       tags:
         - Matches
       summary: Get Riot match details by player PUUID
