@@ -19,7 +19,7 @@ paths:
           required: true
           description: The region of the Riot account (e.g., NA, EUW, EUNE)
           schema:
-            type: string
+            $ref: "#/components/schemas/Region"
           examples:
             NA:
               value: na1
@@ -88,7 +88,7 @@ paths:
           required: true
           description: The region of the Riot account (e.g., NA, EUW, EUNE)
           schema:
-            type: string
+            $ref: "#/components/schemas/Region"
           examples:
             NA:
               value: na1
@@ -145,7 +145,7 @@ paths:
           required: true
           description: The region of the Riot account (e.g., NA, EUW, EUNE)
           schema:
-            type: string
+            $ref: "#/components/schemas/Region"
           examples:
             NA:
               value: na1
@@ -161,7 +161,7 @@ paths:
           required: true
           description: The queue type (e.g., RANKED_SOLO_5x5, RANKED_FLEX_SR)
           schema:
-            type: string
+            $ref: "#/components/schemas/RankedQueue"
           examples:
             solo_queue:
               value: RANKED_SOLO_5x5
@@ -174,7 +174,7 @@ paths:
           required: true
           description: The ranked tier (e.g., IRON, BRONZE, SILVER, GOLD, PLATINUM, EMERALD, DIAMOND, MASTER, GRANDMASTER, CHALLENGER)
           schema:
-            type: string
+            $ref: "#/components/schemas/RankedTier"
           examples:
             iron_tier:
               value: IRON
@@ -211,7 +211,7 @@ paths:
           required: true
           description: The ranked division (e.g., I, II, III, IV)
           schema:
-            type: string
+            $ref: "#/components/schemas/RankedDivision"
           examples:
             division_i:
               value: I
@@ -266,7 +266,7 @@ paths:
           required: true
           description: The region of the Riot account (e.g., America, Europe, Asia)
           schema:
-            type: string
+            $ref: "#/components/schemas/Platform"
           examples:
             America:
               value: americas
@@ -324,7 +324,7 @@ paths:
           required: true
           description: The region of the Riot account (e.g., America, Europe, Asia)
           schema:
-            type: string
+            $ref: "#/components/schemas/Platform"
           examples:
             America:
               value: americas
@@ -405,7 +405,7 @@ paths:
           required: true
           description: The region of the Riot account (e.g., America, Europe, Asia)
           schema:
-            type: string
+            $ref: "#/components/schemas/Platform"
           examples:
             America:
               value: americas
@@ -755,6 +755,44 @@ components:
           BRAWL,
           ARAM_MAYHEM,
         ]
+    Region:
+      type: string
+      description: "Platform routing values for League of Legends regions"
+      enum:
+        [
+          br1,
+          euw1,
+          na1,
+          eun1,
+          kr,
+          jp1,
+          la1,
+          la2,
+          oc1,
+          tr1,
+          ru,
+          ph2,
+          sg2,
+          th2,
+          tw2,
+          vn2,
+        ]
+    Platform:
+      type: string
+      description: "Regional routing values for match and other data"
+      enum: [europe, americas, asia, sea]
+    RankedQueue:
+      type: string
+      description: "Ranked queue type"
+      enum: [RANKED_SOLO_5x5, RANKED_FLEX_SR, RANKED_FLEX_TT]
+    RankedTier:
+      type: string
+      description: "Ranked tier"
+      enum: [IRON, BRONZE, SILVER, GOLD, PLATINUM, EMERALD, DIAMOND, MASTER, GRANDMASTER, CHALLENGER]
+    RankedDivision:
+      type: string
+      description: "Ranked division within a tier"
+      enum: [I, II, III, IV]
     LeagueDetails:
       type: object
       properties:
