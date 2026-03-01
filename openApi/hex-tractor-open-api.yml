@@ -774,6 +774,10 @@ components:
           tw2,
           vn2,
         ]
+    Platform:
+      type: string
+      description: "Regional routing values for match and other data"
+      enum: [europe, americas, asia, sea]
     RankedQueue:
       type: string
       description: "Ranked queue type"
