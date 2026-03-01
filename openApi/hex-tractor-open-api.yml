@@ -270,17 +270,14 @@ paths:
           required: true
           description: The region of the Riot account (e.g., America, Europe, Asia)
           schema:
-            $ref: "#/components/schemas/Platform"
+            $ref: "#/components/schemas/Region"
           examples:
-            America:
-              value: americas
-              description: Riot Americas region (includes North and South America)
-            Europe:
-              value: europe
-              description: Riot Europe region (includes EUW and EUNE)
-            Asia:
-              value: asia
-              description: Riot Asia region (includes KR and JP)
+            euw1:
+              value: euw1
+            na1:
+              value: na1
+            kr:
+              value: kr
         - name: matchId
           in: path
           required: true
@@ -329,17 +326,14 @@ paths:
           required: true
           description: The region of the Riot account (e.g., America, Europe, Asia)
           schema:
-            $ref: "#/components/schemas/Platform"
+            $ref: "#/components/schemas/Region"
           examples:
-            America:
-              value: americas
-              description: Riot Americas region (includes North and South America)
-            Europe:
-              value: europe
-              description: Riot Europe region (includes EUW and EUNE)
-            Asia:
-              value: asia
-              description: Riot Asia region (includes KR and JP)
+            euw1:
+              value: euw1
+            na1:
+              value: na1
+            kr:
+              value: kr
         - name: puuid
           in: path
           required: true
@@ -411,17 +405,14 @@ paths:
           required: true
           description: The region of the Riot account (e.g., America, Europe, Asia)
           schema:
-            $ref: "#/components/schemas/Platform"
+            $ref: "#/components/schemas/Region"
           examples:
-            America:
-              value: americas
-              description: Riot Americas region (includes North and South America)
-            Europe:
-              value: europe
-              description: Riot Europe region (includes EUW and EUNE)
-            Asia:
-              value: asia
-              description: Riot Asia region (includes KR and JP)
+            euw1:
+              value: euw1
+            na1:
+              value: na1
+            kr:
+              value: kr
         - name: puuid
           in: path
           required: true
@@ -783,10 +774,6 @@ components:
           tw2,
           vn2,
         ]
-    Platform:
-      type: string
-      description: "Regional routing values for match and other data"
-      enum: [europe, americas, asia, sea]
     RankedQueue:
       type: string
       description: "Ranked queue type"
