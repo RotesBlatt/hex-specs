@@ -71,6 +71,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/simpleError"
+        "429":
+          description: Too Many Requests - Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
         "500":
           description: Internal Server Error - An unexpected error occurred
           content:
@@ -125,6 +131,12 @@ paths:
                 $ref: "#/components/schemas/validationError"
         "404":
           description: Not Found - Account not found for the given parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "429":
+          description: Too Many Requests - Rate limit exceeded
           content:
             application/json:
               schema:
@@ -249,6 +261,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/validationError"
+        "429":
+          description: Too Many Requests - Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
         "500":
           description: Internal Server Error - An unexpected error occurred while processing the request.
           content:
@@ -301,6 +319,12 @@ paths:
                 $ref: "#/components/schemas/validationError"
         "404":
           description: Not Found - Match not found for the given parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "429":
+          description: Too Many Requests - Rate limit exceeded
           content:
             application/json:
               schema:
@@ -380,6 +404,12 @@ paths:
                 $ref: "#/components/schemas/validationError"
         "404":
           description: Not Found - No matches found for the given parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "429":
+          description: Too Many Requests - Rate limit exceeded
           content:
             application/json:
               schema:
@@ -479,8 +509,141 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/simpleError"
+        "429":
+          description: Too Many Requests - Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
         "500":
           description: Internal Server Error - Failed to retrieve match details for the specified parameters.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+  /leaderboard/{region}/{queue}/{tier}/{division}:
+    get:
+      operationId: getLeaderboard
+      tags:
+        - Leagues
+      summary: Get Riot leaderboard entries by queue, tier, and division
+      description: Retrieve Riot leaderboard entries for a specific region, queue type, tier, and division
+      parameters:
+        - name: region
+          in: path
+          required: true
+          description: The region of the Riot account (e.g., NA, EUW, EUNE)
+          schema:
+            $ref: "#/components/schemas/Region"
+          examples:
+            NA:
+              value: na1
+              description: North America
+            EUW:
+              value: euw1
+              description: Europe West
+            EUNE:
+              value: eun1
+              description: Europe Nordic & East
+        - name: queue
+          in: path
+          required: true
+          description: The queue type (e.g., RANKED_SOLO_5x5, RANKED_FLEX_SR)
+          schema:
+            $ref: "#/components/schemas/RankedQueue"
+          examples:
+            solo_queue:
+              value: RANKED_SOLO_5x5
+              description: Ranked Solo/Duo Queue on Summoners Rift
+            flex_queue:
+              value: RANKED_FLEX_SR
+              description: Ranked Flex Queue on Summoners Rift
+        - name: tier
+          in: path
+          required: true
+          description: The ranked tier (e.g., IRON, BRONZE, SILVER, GOLD, PLATINUM, EMERALD, DIAMOND, MASTER, GRANDMASTER, CHALLENGER)
+          schema:
+            $ref: "#/components/schemas/RankedTier"
+          examples:
+            iron_tier:
+              value: IRON
+              description: Iron tier in ranked play (lowest tier)
+            bronze_tier:
+              value: BRONZE
+              description: Bronze tier in ranked play
+            silver_tier:
+              value: SILVER
+              description: Silver tier in ranked play
+            gold_tier:
+              value: GOLD
+              description: Gold tier in ranked play
+            platinum_tier:
+              value: PLATINUM
+              description: Platinum tier in ranked play
+            emerald_tier:
+              value: EMERALD
+              description: Emerald tier in ranked play
+            diamond_tier:
+              value: DIAMOND
+              description: Diamond tier in ranked play
+            master_tier:
+              value: MASTER
+              description: Master tier in ranked play (third highest tier)
+            grandmaster_tier:
+              value: GRANDMASTER
+              description: Grandmaster tier in ranked play (second highest tier)
+            challenger_tier:
+              value: CHALLENGER
+              description: Challenger tier in ranked play (highest tier)
+        - name: division
+          in: path
+          required: true
+          description: The ranked division (e.g., I, II, III, IV)
+          schema:
+            $ref: "#/components/schemas/RankedDivision"
+          examples:
+            division_i:
+              value: I
+              description: Division I within a ranked tier (highest division)
+            division_ii:
+              value: II
+              description: Division II within a ranked tier
+            division_iii:
+              value: III
+              description: Division III within a ranked tier
+            division_iv:
+              value: IV
+              description: Division IV within a ranked tier (lowest division)
+        - name: count
+          in: query
+          required: false
+          description: The maximum number of leaderboard entries to return (optional)
+          schema:
+            type: integer
+            format: int32
+            default: 20
+          allowEmptyValue: true
+      responses:
+        "200":
+          description: OK - Leaderboard entries retrieved successfully for the specified parameters.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaderBoardPlayerList"
+        "400":
+          description: Bad Request - Invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validationError"
+        "429":
+          description: Too Many Requests - Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal Server Error - An unexpected error occurred while processing the request.
           content:
             application/json:
               schema:
@@ -2908,3 +3071,48 @@ components:
         - veteran
         - freshBlood
         - inactive
+    LeaderBoardPlayerList:
+      type: array
+      items:
+        $ref: "#/components/schemas/LeaderboardPlayer"
+      x-type: "List[LeaderboardPlayer]"
+    LeaderboardPlayer:
+      type: object
+      title: LeaderboardPlayer
+      properties:
+        puuid:
+          type: string
+          x-type: string
+          description: "This field may be omitted if the player has been anonymized."
+        summonerName:
+          type: string
+          x-type: string
+          description: "This field may be omitted if the player has been anonymized."
+        tagLine:
+          type: string
+          x-type: string
+          description: "This field may be omitted if the player has been anonymized."
+        leaguePoints:
+          type: integer
+          format: int32
+          x-type: int
+        wins:
+          type: integer
+          format: int32
+          x-type: int
+        losses:
+          type: integer
+          format: int32
+          x-type: int
+        profileIconId:
+          type: integer
+          format: int32
+          x-type: int
+      required:
+        - puuid
+        - summonerName
+        - tagLine
+        - leaguePoints
+        - wins
+        - losses
+        - profileIconId
