@@ -242,9 +242,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/LeagueDetails"
+                $ref: "#/components/schemas/LeagueDetails"
         "400":
           description: Bad Request - Invalid input parameters
           content:
@@ -785,7 +783,19 @@ components:
     RankedTier:
       type: string
       description: "Ranked tier"
-      enum: [IRON, BRONZE, SILVER, GOLD, PLATINUM, EMERALD, DIAMOND, MASTER, GRANDMASTER, CHALLENGER]
+      enum:
+        [
+          IRON,
+          BRONZE,
+          SILVER,
+          GOLD,
+          PLATINUM,
+          EMERALD,
+          DIAMOND,
+          MASTER,
+          GRANDMASTER,
+          CHALLENGER,
+        ]
     RankedDivision:
       type: string
       description: "Ranked division within a tier"
