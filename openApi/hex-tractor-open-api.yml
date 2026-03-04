@@ -3115,4 +3115,3 @@ components:
         - leaguePoints
         - wins
         - losses
-        - profileIconId
