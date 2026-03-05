@@ -248,6 +248,15 @@ paths:
             type: integer
             format: int32
           allowEmptyValue: true
+        - name: start
+          in: query
+          required: false
+          description: The starting index for pagination of league entries (optional)
+          schema:
+            type: integer
+            format: int32
+            default: 0
+          allowEmptyValue: true
       responses:
         "200":
           description: OK - League entries retrieved successfully for the specified parameters.
