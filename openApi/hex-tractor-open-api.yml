@@ -623,6 +623,15 @@ paths:
             format: int32
             default: 20
           allowEmptyValue: true
+        - name: start
+          in: query
+          required: false
+          description: The starting index for pagination of leaderboard entries (optional)
+          schema:
+            type: integer
+            format: int32
+            default: 0
+          allowEmptyValue: true
       responses:
         "200":
           description: OK - Leaderboard entries retrieved successfully for the specified parameters.
