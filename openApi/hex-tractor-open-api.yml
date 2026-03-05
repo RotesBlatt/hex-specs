@@ -7,7 +7,7 @@ servers:
   - url: http://localhost:3000/api
     description: Local Development server
 paths:
-  /account/{region}/{summonerName}/{tagLine}:
+  /account/by-name/{region}/{summonerName}/{tagLine}:
     get:
       operationId: getAccountBySummonerName
       tags:
@@ -83,7 +83,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/simpleInternalError"
-  /account/{region}/{puuid}:
+  /account/by-puuid/{region}/{puuid}:
     get:
       operationId: getAccountByPuuid
       tags:
