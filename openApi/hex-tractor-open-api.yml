@@ -3250,6 +3250,11 @@ components:
         deviceId:
           type: string
           x-type: string
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        deviceType:
+          type: string
+          x-type: string
+          example: "Android"
         publicKeyJwk:
           type: object
           $ref: "#/components/schemas/JwkPublicKey"
