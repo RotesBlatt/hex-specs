@@ -6,6 +6,11 @@ info:
 servers:
   - url: http://localhost:3000/api
     description: Local Development server
+security:
+  - DeviceId: []
+    Nonce: []
+    Timestamp: []
+    Signature: []
 paths:
   /account/by-name/{region}/{summonerName}/{tagLine}:
     get:
@@ -65,6 +70,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/validationError"
+        "401":
+          description: Unauthorized - Invalid or missing Authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
         "404":
           description: Not Found - Account not found for the given parameters
           content:
@@ -129,6 +140,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/validationError"
+        "401":
+          description: Unauthorized - Invalid or missing Authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+
         "404":
           description: Not Found - Account not found for the given parameters
           content:
@@ -270,6 +288,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/validationError"
+        "401":
+          description: Unauthorized - Invalid or missing Authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
         "429":
           description: Too Many Requests - Rate limit exceeded
           content:
@@ -326,6 +350,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/validationError"
+        "401":
+          description: Unauthorized - Invalid or missing Authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
         "404":
           description: Not Found - Match not found for the given parameters
           content:
@@ -411,6 +441,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/validationError"
+        "401":
+          description: Unauthorized - Invalid or missing Authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
         "404":
           description: Not Found - No matches found for the given parameters
           content:
@@ -512,6 +548,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/validationError"
+        "401":
+          description: Unauthorized - Invalid or missing Authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
         "404":
           description: Not Found - No matches found for the given parameters
           content:
@@ -654,6 +696,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/validationError"
+        "401":
+          description: Unauthorized - Invalid or missing Authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
         "429":
           description: Too Many Requests - Rate limit exceeded
           content:
@@ -666,7 +714,75 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/simpleInternalError"
+  /auth/devices/register:
+    post:
+      operationId: registerDevice
+      security: []
+      tags:
+        - Authentication
+      summary: Register a new device for authentication
+      description: Register a new device to receive an authentication token for accessing protected endpoints
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Device"
+      responses:
+        "201":
+          description: Created - Device registered successfully and authentication token returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deviceId:
+                    type: string
+                    example: "123e4567-e89b-12d3-a456-426614174000"
+        "400":
+          description: Bad Request - Invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validationError"
+        "401":
+          description: Unauthorized - Invalid or missing Authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal Server Error - An unexpected error occurred while processing the request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+
 components:
+  securitySchemes:
+    DeviceId:
+      type: apiKey
+      in: header
+      name: X-Device-Id
+      description: The unique identifier of the device registered via /auth/devices/register
+    Nonce:
+      type: apiKey
+      in: header
+      name: X-Nonce
+      description: A unique random value (e.g. UUID v4) to prevent replay attacks. Must be unique per request.
+    Timestamp:
+      type: apiKey
+      in: header
+      name: X-Timestamp
+      description: Unix timestamp in milliseconds at the time the request was signed. Requests older than a server-defined threshold (e.g. 30 s) are rejected.
+    Signature:
+      type: apiKey
+      in: header
+      name: X-Signature
+      description: |-
+        Base64-encoded signature over the canonical request string.
+        Canonical form: `METHOD\nPATH\nX-Device-Id\nX-Nonce\nX-Timestamp\nSHA-256(body)`.
+        Signed with the device private key whose corresponding public key was registered at device registration time.
   schemas:
     simpleInternalError:
       type: object
@@ -3133,3 +3249,20 @@ components:
         - leaguePoints
         - wins
         - losses
+    Device:
+      type: object
+      title: Device
+      properties:
+        deviceId:
+          type: string
+          x-type: string
+        publicKeyJwk:
+          type: string
+          x-type: string
+        attestationToken:
+          type: string
+          x-type: string
+      required:
+        - deviceId
+        - publicKeyJwk
+        - attestationToken
