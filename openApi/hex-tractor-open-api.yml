@@ -745,12 +745,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/validationError"
-        "401":
-          description: Unauthorized - Invalid or missing Authentication
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/simpleError"
         "500":
           description: Internal Server Error - An unexpected error occurred while processing the request.
           content:
@@ -3257,8 +3251,8 @@ components:
           type: string
           x-type: string
         publicKeyJwk:
-          type: string
-          x-type: string
+          type: object
+          $ref: "#/components/schemas/JwkPublicKey"
         attestationToken:
           type: string
           x-type: string
@@ -3266,3 +3260,22 @@ components:
         - deviceId
         - publicKeyJwk
         - attestationToken
+    JwkPublicKey:
+      type: object
+      title: JwkPublicKey
+      properties:
+        kty:
+          type: string
+          x-type: string
+        crv:
+          type: string
+          x-type: string
+        x:
+          type: string
+          x-type: string
+        y:
+          type: string
+          x-type: string
+        ext:
+          type: boolean
+          x-type: boolean
