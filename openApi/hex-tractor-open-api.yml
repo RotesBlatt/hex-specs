@@ -751,6 +751,43 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/simpleInternalError"
+  /auth/challenge:
+    get:
+      operationId: getAuthChallenge
+      security: []
+      tags:
+        - Authentication
+      summary: Get an authentication challenge for signing
+      description: Retrieve a unique authentication challenge that can be signed with the device's private key to authenticate requests
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          description: The unique identifier of the device registered via /auth/devices/register
+          schema:
+            type: string
+            x-type: string
+          examples:
+            valid_device_id:
+              value: "123e4567-e89b-12d3-a456-426614174000"
+              description: A sample device ID for testing
+      responses:
+        "200":
+          description: OK - Authentication challenge retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  challenge:
+                    type: string
+                    example: "abcdef1234567890"
+        "500":
+          description: Internal Server Error - An unexpected error occurred while processing the request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
 
 components:
   securitySchemes:
