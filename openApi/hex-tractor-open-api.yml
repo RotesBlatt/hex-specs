@@ -751,7 +751,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/simpleInternalError"
-  /auth/challenge:
+  /auth/challenge/{deviceId}:
     get:
       operationId: getAuthChallenge
       security: []
