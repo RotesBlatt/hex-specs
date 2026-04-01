@@ -714,6 +714,393 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/simpleInternalError"
+  /stats/champions:
+    get:
+      operationId: getChampionStatsByRegionPatchTier
+      tags:
+        - Stats
+      summary: Get champion aggregated stats
+      description: Retrieve champion aggregated statistics for a specific region, patch, and tier.
+      parameters:
+        - name: region
+          in: query
+          required: true
+          description: Region partition key used for stats aggregation and reads.
+          schema:
+            $ref: "#/components/schemas/Region"
+          examples:
+            euw1:
+              value: euw1
+              description: Europe West
+        - name: patch
+          in: query
+          required: false
+          schema:
+            type: string
+          example: "15.6"
+        - name: tier
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/RankedTier"
+          example: "EMERALD"
+        - name: queue
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/QueueId"
+          example: 420
+      responses:
+        "200":
+          description: Champion stats retrieved successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ChampionStatsListResponseData"
+                      meta:
+                        $ref: "#/components/schemas/ChampionStatsMeta"
+                    required:
+                      - data
+                      - meta
+              examples:
+                euw1_success:
+                  summary: Success response for region euw1
+                  value:
+                    success: true
+                    data:
+                      items:
+                        - championId: 266
+                          picks: 12400
+                          wins: 6215
+                          losses: 6185
+                          bans: 1600
+                          winrate: 50.12
+                          pickrate: 11.3
+                          banrate: 3.2
+                    meta:
+                      region: euw1
+                      patch: "15.6"
+                      tier: "EMERALD"
+                      queue: 420
+                      generatedAt: "2026-04-01T10:00:00Z"
+                      dataFreshnessSeconds: 120
+                      totalGames: 109734
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validationError"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+  /stats/champions/{championId}:
+    get:
+      operationId: getChampionStatsDetailByRegion
+      tags:
+        - Stats
+      summary: Get champion stats detail
+      description: Retrieve aggregated stats for a single champion for a specific region.
+      parameters:
+        - name: championId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+          example: 266
+        - name: region
+          in: query
+          required: true
+          description: Region partition key used for stats aggregation and reads.
+          schema:
+            $ref: "#/components/schemas/Region"
+        - name: patch
+          in: query
+          required: true
+          schema:
+            type: string
+          example: "15.6"
+        - name: tier
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/RankedTier"
+          example: "EMERALD"
+        - name: queue
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/QueueId"
+          example: 420
+      responses:
+        "200":
+          description: Champion stats detail retrieved successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ChampionStatsView"
+                      meta:
+                        $ref: "#/components/schemas/ChampionStatsMeta"
+                    required:
+                      - data
+                      - meta
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validationError"
+        "404":
+          description: Champion stats not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+  /players/{puuid}/stats/request:
+    post:
+      operationId: requestPlayerStatsJob
+      tags:
+        - PlayerStats
+      summary: Request player stats computation
+      description: |-
+        Request player stats computation for a specific region and stats type.
+        Behavior:
+        - If valid cache exists for same (region, puuid, type, paramsHash), return 200 with cached result.
+        - If equivalent in-flight job exists, return 202 with existing jobId (do not enqueue duplicate).
+        - Else enqueue a new job and return 202 with new jobId.
+      parameters:
+        - name: puuid
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlayerStatsJobRequest"
+      responses:
+        "200":
+          description: Cache hit, ready result returned.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/PlayerStatsCacheEntry"
+                      meta:
+                        type: object
+                        properties:
+                          region:
+                            $ref: "#/components/schemas/Region"
+                        required:
+                          - region
+                    required:
+                      - data
+                      - meta
+              examples:
+                cache_hit:
+                  summary: Cached result returned immediately
+                  value:
+                    success: true
+                    data:
+                      jobId: "job_01HTCXYZ123"
+                      region: euw1
+                      puuid: "rkrmXhHeKayKBCXI_xngBNpnY_rBXwyPMW_PtY-JaSzHj80gjfuesdk5GtiRxqGxavf2T7Ek-JPJrg"
+                      type: champions
+                      paramsHash: "sha256:f9d8ee9f4b6f"
+                      status: ready
+                      computedAt: "2026-04-01T10:00:00Z"
+                      expiresAt: "2026-04-01T10:10:00Z"
+                      lastSourceMatchAt: "2026-04-01T09:58:02Z"
+                      result:
+                        champions:
+                          - championId: 266
+                            games: 17
+                            wins: 9
+                      error: null
+                    meta:
+                      region: euw1
+        "202":
+          description: Accepted, existing in-flight job reused or new job created.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/PlayerStatsJobAccepted"
+                      meta:
+                        type: object
+                        properties:
+                          region:
+                            $ref: "#/components/schemas/Region"
+                        required:
+                          - region
+                    required:
+                      - data
+                      - meta
+              examples:
+                in_flight_existing_job:
+                  summary: Existing in-flight job returned
+                  value:
+                    success: true
+                    data:
+                      jobId: "job_01HTCXYZ123"
+                      status: running
+                      region: euw1
+                      puuid: "rkrmXhHeKayKBCXI_xngBNpnY_rBXwyPMW_PtY-JaSzHj80gjfuesdk5GtiRxqGxavf2T7Ek-JPJrg"
+                    meta:
+                      region: euw1
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validationError"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+  /players/{puuid}/stats/{jobId}:
+    get:
+      operationId: getPlayerStatsJobStatus
+      tags:
+        - PlayerStats
+      summary: Get player stats job status
+      description: Retrieve the status or result for a region-scoped player stats job.
+      parameters:
+        - name: puuid
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: region
+          in: query
+          required: true
+          description: Region partition key used for stats aggregation and reads.
+          schema:
+            $ref: "#/components/schemas/Region"
+      responses:
+        "200":
+          description: Job status or result retrieved.
+          headers:
+            Retry-After:
+              description: Included when job status is pending or running.
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/PlayerStatsCacheEntry"
+                      meta:
+                        type: object
+                        properties:
+                          region:
+                            $ref: "#/components/schemas/Region"
+                        required:
+                          - region
+                    required:
+                      - data
+                      - meta
+              examples:
+                pending:
+                  summary: Pending job response with Retry-After
+                  value:
+                    success: true
+                    data:
+                      jobId: "job_01HTCXYZ124"
+                      region: euw1
+                      puuid: "rkrmXhHeKayKBCXI_xngBNpnY_rBXwyPMW_PtY-JaSzHj80gjfuesdk5GtiRxqGxavf2T7Ek-JPJrg"
+                      type: timeline
+                      paramsHash: "sha256:ab12cd34"
+                      status: pending
+                      computedAt: null
+                      expiresAt: "2026-04-01T10:10:00Z"
+                      lastSourceMatchAt: null
+                      result: null
+                      error: null
+                    meta:
+                      region: euw1
+                ready:
+                  summary: Ready job response with result payload
+                  value:
+                    success: true
+                    data:
+                      jobId: "job_01HTCXYZ125"
+                      region: euw1
+                      puuid: "rkrmXhHeKayKBCXI_xngBNpnY_rBXwyPMW_PtY-JaSzHj80gjfuesdk5GtiRxqGxavf2T7Ek-JPJrg"
+                      type: teammates
+                      paramsHash: "sha256:ef567890"
+                      status: ready
+                      computedAt: "2026-04-01T10:02:10Z"
+                      expiresAt: "2026-04-01T10:12:10Z"
+                      lastSourceMatchAt: "2026-04-01T10:00:21Z"
+                      result:
+                        topTeammates:
+                          - puuid: "abcd"
+                            games: 12
+                            wins: 8
+                      error: null
+                    meta:
+                      region: euw1
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validationError"
+        "404":
+          description: Job not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
   /auth/devices/register:
     post:
       operationId: registerDevice
@@ -3322,3 +3709,231 @@ components:
         ext:
           type: boolean
           x-type: boolean
+    ApiSuccess:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          type: object
+        meta:
+          type: object
+      required:
+        - success
+        - data
+    AggregatedStats:
+      type: object
+      properties:
+        region:
+          $ref: "#/components/schemas/Region"
+        championId:
+          type: integer
+          format: int32
+        patchVersion:
+          type: string
+        tier:
+          type: string
+        queueId:
+          type: integer
+          format: int32
+        picks:
+          type: integer
+          format: int32
+        wins:
+          type: integer
+          format: int32
+        losses:
+          type: integer
+          format: int32
+        bans:
+          type: integer
+          format: int32
+        sampleSize:
+          type: integer
+          format: int32
+        lastComputedAt:
+          type: string
+          format: date-time
+      required:
+        - region
+        - championId
+        - patchVersion
+        - tier
+        - queueId
+        - picks
+        - wins
+        - losses
+        - bans
+        - sampleSize
+        - lastComputedAt
+    ChampionStatsView:
+      type: object
+      properties:
+        championId:
+          type: integer
+          format: int32
+        picks:
+          type: integer
+          format: int32
+        wins:
+          type: integer
+          format: int32
+        losses:
+          type: integer
+          format: int32
+        bans:
+          type: integer
+          format: int32
+        winrate:
+          type: number
+          format: float
+        pickrate:
+          type: number
+          format: float
+        banrate:
+          type: number
+          format: float
+      required:
+        - championId
+        - picks
+        - wins
+        - losses
+        - bans
+        - winrate
+        - pickrate
+        - banrate
+    ChampionStatsListResponseData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChampionStatsView"
+      required:
+        - items
+    ChampionStatsMeta:
+      type: object
+      properties:
+        region:
+          $ref: "#/components/schemas/Region"
+        patch:
+          type: string
+        tier:
+          type: string
+        queue:
+          oneOf:
+            - type: string
+            - type: integer
+              format: int32
+        generatedAt:
+          type: string
+          format: date-time
+        dataFreshnessSeconds:
+          type: integer
+          format: int32
+        totalGames:
+          type: integer
+          format: int32
+      required:
+        - region
+        - patch
+        - tier
+        - queue
+        - generatedAt
+        - dataFreshnessSeconds
+        - totalGames
+    PlayerStatsType:
+      type: string
+      enum:
+        - champions
+        - teammates
+        - opponents
+        - timeline
+    PlayerStatsJobStatus:
+      type: string
+      enum:
+        - pending
+        - running
+        - ready
+        - failed
+        - expired
+    PlayerStatsJobRequest:
+      type: object
+      properties:
+        region:
+          $ref: "#/components/schemas/Region"
+        type:
+          $ref: "#/components/schemas/PlayerStatsType"
+        params:
+          type: object
+          additionalProperties: true
+          description: Type-specific parameters.
+      required:
+        - region
+        - type
+    PlayerStatsJobAccepted:
+      type: object
+      properties:
+        jobId:
+          type: string
+        status:
+          $ref: "#/components/schemas/PlayerStatsJobStatus"
+        region:
+          $ref: "#/components/schemas/Region"
+        puuid:
+          type: string
+      required:
+        - jobId
+        - status
+        - region
+        - puuid
+    PlayerStatsCacheEntry:
+      type: object
+      properties:
+        jobId:
+          type: string
+        region:
+          $ref: "#/components/schemas/Region"
+        puuid:
+          type: string
+        type:
+          $ref: "#/components/schemas/PlayerStatsType"
+        paramsHash:
+          type: string
+        status:
+          $ref: "#/components/schemas/PlayerStatsJobStatus"
+        computedAt:
+          type: string
+          format: date-time
+          nullable: true
+        expiresAt:
+          type: string
+          format: date-time
+        lastSourceMatchAt:
+          type: string
+          format: date-time
+          nullable: true
+        result:
+          type: object
+          nullable: true
+          additionalProperties: true
+        error:
+          type: object
+          nullable: true
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties: true
+      required:
+        - jobId
+        - region
+        - puuid
+        - type
+        - paramsHash
+        - status
+        - expiresAt
