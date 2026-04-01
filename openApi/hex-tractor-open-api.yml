@@ -756,17 +756,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiSuccess"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/ChampionStatsListResponseData"
-                      meta:
-                        $ref: "#/components/schemas/ChampionStatsMeta"
-                    required:
-                      - data
-                      - meta
+                $ref: "#/components/schemas/ChampionStatsListResponse"
               examples:
                 euw1_success:
                   summary: Success response for region euw1
@@ -847,17 +837,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiSuccess"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/ChampionStatsView"
-                      meta:
-                        $ref: "#/components/schemas/ChampionStatsMeta"
-                    required:
-                      - data
-                      - meta
+                $ref: "#/components/schemas/ChampionStatsDetailResponse"
         "400":
           description: Validation error.
           content:
@@ -935,17 +915,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiSuccess"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/ChampionMatchupStatsListResponseData"
-                      meta:
-                        $ref: "#/components/schemas/StatsMetaWithLane"
-                    required:
-                      - data
-                      - meta
+                $ref: "#/components/schemas/ChampionMatchupStatsListResponse"
               examples:
                 euw1_directional_matchups:
                   summary: Directional matchup entries for A vs B
@@ -1059,17 +1029,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiSuccess"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/ChampionSynergyStatsListResponseData"
-                      meta:
-                        $ref: "#/components/schemas/StatsMetaCommon"
-                    required:
-                      - data
-                      - meta
+                $ref: "#/components/schemas/ChampionSynergyStatsListResponse"
               examples:
                 euw1_success:
                   value:
@@ -1151,17 +1111,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiSuccess"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/ChampionPerformanceStatsListResponseData"
-                      meta:
-                        $ref: "#/components/schemas/StatsMetaCommon"
-                    required:
-                      - data
-                      - meta
+                $ref: "#/components/schemas/ChampionPerformanceStatsListResponse"
               examples:
                 euw1_success:
                   value:
@@ -1242,17 +1192,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiSuccess"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/ChampionPerformanceStatsItem"
-                      meta:
-                        $ref: "#/components/schemas/StatsMetaCommon"
-                    required:
-                      - data
-                      - meta
+                $ref: "#/components/schemas/ChampionPerformanceStatsDetailResponse"
               examples:
                 euw1_success:
                   value:
@@ -1333,17 +1273,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiSuccess"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/ChampionObjectiveStatsListResponseData"
-                      meta:
-                        $ref: "#/components/schemas/StatsMetaCommon"
-                    required:
-                      - data
-                      - meta
+                $ref: "#/components/schemas/ChampionObjectiveStatsListResponse"
               examples:
                 euw1_success:
                   value:
@@ -1424,17 +1354,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiSuccess"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/ChampionGameLengthStatsListResponseData"
-                      meta:
-                        $ref: "#/components/schemas/StatsMetaCommon"
-                    required:
-                      - data
-                      - meta
+                $ref: "#/components/schemas/ChampionGameLengthStatsResponse"
               examples:
                 euw1_all_buckets:
                   value:
@@ -1540,17 +1460,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiSuccess"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/ChampionEarlyGameStatsItem"
-                      meta:
-                        $ref: "#/components/schemas/StatsMetaCommon"
-                    required:
-                      - data
-                      - meta
+                $ref: "#/components/schemas/ChampionEarlyGameStatsResponse"
               examples:
                 euw1_success:
                   value:
@@ -1623,22 +1533,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiSuccess"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/PlayerStatsCacheEntry"
-                      meta:
-                        type: object
-                        properties:
-                          region:
-                            $ref: "#/components/schemas/Region"
-                        required:
-                          - region
-                    required:
-                      - data
-                      - meta
+                $ref: "#/components/schemas/PlayerStatsCacheEntryResponse"
               examples:
                 cache_hit:
                   summary: Cached result returned immediately
@@ -1659,7 +1554,6 @@ paths:
                           - championId: 266
                             games: 17
                             wins: 9
-                      error: null
                     meta:
                       region: euw1
         "202":
@@ -1667,22 +1561,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiSuccess"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/PlayerStatsJobAccepted"
-                      meta:
-                        type: object
-                        properties:
-                          region:
-                            $ref: "#/components/schemas/Region"
-                        required:
-                          - region
-                    required:
-                      - data
-                      - meta
+                $ref: "#/components/schemas/PlayerStatsJobAcceptedResponse"
               examples:
                 in_flight_existing_job:
                   summary: Existing in-flight job returned
@@ -1743,22 +1622,7 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiSuccess"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/PlayerStatsCacheEntry"
-                      meta:
-                        type: object
-                        properties:
-                          region:
-                            $ref: "#/components/schemas/Region"
-                        required:
-                          - region
-                    required:
-                      - data
-                      - meta
+                $ref: "#/components/schemas/PlayerStatsCacheEntryResponse"
               examples:
                 pending:
                   summary: Pending job response with Retry-After
@@ -1774,8 +1638,6 @@ paths:
                       computedAt: null
                       expiresAt: "2026-04-01T10:10:00Z"
                       lastSourceMatchAt: null
-                      result: null
-                      error: null
                     meta:
                       region: euw1
                 ready:
@@ -1797,7 +1659,6 @@ paths:
                           - puuid: "abcd"
                             games: 12
                             wins: 8
-                      error: null
                     meta:
                       region: euw1
         "400":
@@ -4426,19 +4287,167 @@ components:
         ext:
           type: boolean
           x-type: boolean
-    ApiSuccess:
+    PlayerStatsRegionMeta:
+      type: object
+      properties:
+        region:
+          $ref: "#/components/schemas/Region"
+      required:
+        - region
+    ChampionStatsListResponse:
       type: object
       properties:
         success:
           type: boolean
           enum: [true]
         data:
-          type: object
+          $ref: "#/components/schemas/ChampionStatsListResponseData"
         meta:
-          type: object
+          $ref: "#/components/schemas/ChampionStatsMeta"
       required:
         - success
         - data
+        - meta
+    ChampionStatsDetailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: "#/components/schemas/ChampionStatsView"
+        meta:
+          $ref: "#/components/schemas/ChampionStatsMeta"
+      required:
+        - success
+        - data
+        - meta
+    ChampionMatchupStatsListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: "#/components/schemas/ChampionMatchupStatsListResponseData"
+        meta:
+          $ref: "#/components/schemas/StatsMetaWithLane"
+      required:
+        - success
+        - data
+        - meta
+    ChampionSynergyStatsListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: "#/components/schemas/ChampionSynergyStatsListResponseData"
+        meta:
+          $ref: "#/components/schemas/StatsMetaCommon"
+      required:
+        - success
+        - data
+        - meta
+    ChampionPerformanceStatsListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: "#/components/schemas/ChampionPerformanceStatsListResponseData"
+        meta:
+          $ref: "#/components/schemas/StatsMetaCommon"
+      required:
+        - success
+        - data
+        - meta
+    ChampionPerformanceStatsDetailResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: "#/components/schemas/ChampionPerformanceStatsItem"
+        meta:
+          $ref: "#/components/schemas/StatsMetaCommon"
+      required:
+        - success
+        - data
+        - meta
+    ChampionObjectiveStatsListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: "#/components/schemas/ChampionObjectiveStatsListResponseData"
+        meta:
+          $ref: "#/components/schemas/StatsMetaCommon"
+      required:
+        - success
+        - data
+        - meta
+    ChampionGameLengthStatsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: "#/components/schemas/ChampionGameLengthStatsListResponseData"
+        meta:
+          $ref: "#/components/schemas/StatsMetaCommon"
+      required:
+        - success
+        - data
+        - meta
+    ChampionEarlyGameStatsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: "#/components/schemas/ChampionEarlyGameStatsItem"
+        meta:
+          $ref: "#/components/schemas/StatsMetaCommon"
+      required:
+        - success
+        - data
+        - meta
+    PlayerStatsCacheEntryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: "#/components/schemas/PlayerStatsCacheEntry"
+        meta:
+          $ref: "#/components/schemas/PlayerStatsRegionMeta"
+      required:
+        - success
+        - data
+        - meta
+    PlayerStatsJobAcceptedResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: "#/components/schemas/PlayerStatsJobAccepted"
+        meta:
+          $ref: "#/components/schemas/PlayerStatsRegionMeta"
+      required:
+        - success
+        - data
+        - meta
     AggregatedStats:
       type: object
       properties:
@@ -4952,6 +4961,200 @@ components:
         - ready
         - failed
         - expired
+    PlayerStatsJobParams:
+      oneOf:
+        - $ref: "#/components/schemas/PlayerStatsChampionsParams"
+        - $ref: "#/components/schemas/PlayerStatsTeammatesParams"
+        - $ref: "#/components/schemas/PlayerStatsOpponentsParams"
+        - $ref: "#/components/schemas/PlayerStatsTimelineParams"
+    PlayerStatsChampionsParams:
+      type: object
+      properties:
+        patch:
+          type: string
+        tier:
+          $ref: "#/components/schemas/RankedTier"
+        queueId:
+          $ref: "#/components/schemas/QueueId"
+        limit:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+    PlayerStatsTeammatesParams:
+      type: object
+      properties:
+        patch:
+          type: string
+        tier:
+          $ref: "#/components/schemas/RankedTier"
+        queueId:
+          $ref: "#/components/schemas/QueueId"
+        limit:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+        minGames:
+          type: integer
+          format: int32
+          minimum: 1
+    PlayerStatsOpponentsParams:
+      type: object
+      properties:
+        patch:
+          type: string
+        tier:
+          $ref: "#/components/schemas/RankedTier"
+        queueId:
+          $ref: "#/components/schemas/QueueId"
+        limit:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+        lane:
+          $ref: "#/components/schemas/Lane"
+    PlayerStatsTimelineParams:
+      type: object
+      properties:
+        patch:
+          type: string
+        tier:
+          $ref: "#/components/schemas/RankedTier"
+        queueId:
+          $ref: "#/components/schemas/QueueId"
+        bucketMinutes:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
+    PlayerStatsChampionSummary:
+      type: object
+      properties:
+        championId:
+          type: integer
+          format: int32
+        games:
+          type: integer
+          format: int32
+        wins:
+          type: integer
+          format: int32
+      required:
+        - championId
+        - games
+        - wins
+    PlayerStatsTeammateSummary:
+      type: object
+      properties:
+        puuid:
+          type: string
+        games:
+          type: integer
+          format: int32
+        wins:
+          type: integer
+          format: int32
+      required:
+        - puuid
+        - games
+        - wins
+    PlayerStatsOpponentSummary:
+      type: object
+      properties:
+        puuid:
+          type: string
+        games:
+          type: integer
+          format: int32
+        winsAgainst:
+          type: integer
+          format: int32
+      required:
+        - puuid
+        - games
+        - winsAgainst
+    PlayerStatsTimelineBucket:
+      type: object
+      properties:
+        minute:
+          type: integer
+          format: int32
+        games:
+          type: integer
+          format: int32
+        wins:
+          type: integer
+          format: int32
+      required:
+        - minute
+        - games
+        - wins
+    PlayerStatsChampionsResult:
+      type: object
+      properties:
+        champions:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlayerStatsChampionSummary"
+      required:
+        - champions
+    PlayerStatsTeammatesResult:
+      type: object
+      properties:
+        topTeammates:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlayerStatsTeammateSummary"
+      required:
+        - topTeammates
+    PlayerStatsOpponentsResult:
+      type: object
+      properties:
+        topOpponents:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlayerStatsOpponentSummary"
+      required:
+        - topOpponents
+    PlayerStatsTimelineResult:
+      type: object
+      properties:
+        timeline:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlayerStatsTimelineBucket"
+      required:
+        - timeline
+    PlayerStatsResult:
+      oneOf:
+        - $ref: "#/components/schemas/PlayerStatsChampionsResult"
+        - $ref: "#/components/schemas/PlayerStatsTeammatesResult"
+        - $ref: "#/components/schemas/PlayerStatsOpponentsResult"
+        - $ref: "#/components/schemas/PlayerStatsTimelineResult"
+    PlayerStatsErrorIssue:
+      type: object
+      properties:
+        field:
+          type: string
+        reason:
+          type: string
+      required:
+        - field
+        - reason
+    PlayerStatsErrorDetails:
+      type: object
+      properties:
+        retryAfterSeconds:
+          type: integer
+          format: int32
+        traceId:
+          type: string
+        issues:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlayerStatsErrorIssue"
     PlayerStatsJobRequest:
       type: object
       properties:
@@ -4960,8 +5163,7 @@ components:
         type:
           $ref: "#/components/schemas/PlayerStatsType"
         params:
-          type: object
-          additionalProperties: true
+          $ref: "#/components/schemas/PlayerStatsJobParams"
           description: Type-specific parameters.
       required:
         - region
@@ -5009,20 +5211,16 @@ components:
           format: date-time
           nullable: true
         result:
-          type: object
-          nullable: true
-          additionalProperties: true
+          $ref: "#/components/schemas/PlayerStatsResult"
         error:
           type: object
-          nullable: true
           properties:
             code:
               type: string
             message:
               type: string
             details:
-              type: object
-              additionalProperties: true
+              $ref: "#/components/schemas/PlayerStatsErrorDetails"
       required:
         - jobId
         - region
