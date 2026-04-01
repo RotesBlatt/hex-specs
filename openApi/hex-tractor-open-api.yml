@@ -876,6 +876,723 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/simpleInternalError"
+  /stats/champions/{championId}/matchups:
+    get:
+      operationId: getChampionMatchupsByRegion
+      tags:
+        - Stats
+      summary: Get champion directional matchup stats
+      description: |-
+        Retrieve directional champion-vs-champion matchup metrics.
+        All metrics are computed within the requested region only.
+        For matchup endpoints, results are directional: A vs B is distinct from B vs A.
+        When lane cannot be reliably inferred, records use lane=unknown.
+        All rates are returned as decimal values in range [0, 1].
+      parameters:
+        - name: championId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: region
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Region"
+        - name: patch
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: tier
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/RankedTier"
+        - name: queue
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/QueueId"
+        - name: lane
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Lane"
+            default: unknown
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+            maximum: 100
+      responses:
+        "200":
+          description: Matchup stats retrieved successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ChampionMatchupStatsListResponseData"
+                      meta:
+                        $ref: "#/components/schemas/StatsMetaWithLane"
+                    required:
+                      - data
+                      - meta
+              examples:
+                euw1_directional_matchups:
+                  summary: Directional matchup entries for A vs B
+                  value:
+                    success: true
+                    data:
+                      items:
+                        - championId: 266
+                          opponentChampionId: 157
+                          lane: top
+                          games: 412
+                          winsForChampion: 222
+                          lossesForChampion: 190
+                          winrateForChampion: 0.5388
+                          avgGoldDiffAt10: 214.2
+                          avgCsDiffAt10: 3.1
+                          sampleSize: 412
+                          patch: "15.6"
+                          tier: "EMERALD"
+                          queueId: 420
+                          region: euw1
+                        - championId: 157
+                          opponentChampionId: 266
+                          lane: top
+                          games: 412
+                          winsForChampion: 190
+                          lossesForChampion: 222
+                          winrateForChampion: 0.4612
+                          avgGoldDiffAt10: -214.2
+                          avgCsDiffAt10: -3.1
+                          sampleSize: 412
+                          patch: "15.6"
+                          tier: "EMERALD"
+                          queueId: 420
+                          region: euw1
+                    meta:
+                      region: euw1
+                      patch: "15.6"
+                      tier: "EMERALD"
+                      queueId: 420
+                      generatedAt: "2026-04-01T10:12:00Z"
+                      dataFreshnessSeconds: 120
+                      totalGames: 109734
+                      lane: top
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "404":
+          description: Champion not found in dataset.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+  /stats/champions/{championId}/synergy:
+    get:
+      operationId: getChampionSynergyByRegion
+      tags:
+        - Stats
+      summary: Get champion synergy stats
+      description: |-
+        Retrieve same-team champion duo performance metrics.
+        All metrics are computed within the requested region only.
+        All rates are returned as decimal values in range [0, 1].
+      parameters:
+        - name: championId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: region
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Region"
+        - name: patch
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: tier
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/RankedTier"
+        - name: queue
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/QueueId"
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+            maximum: 100
+      responses:
+        "200":
+          description: Synergy stats retrieved successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ChampionSynergyStatsListResponseData"
+                      meta:
+                        $ref: "#/components/schemas/StatsMetaCommon"
+                    required:
+                      - data
+                      - meta
+              examples:
+                euw1_success:
+                  value:
+                    success: true
+                    data:
+                      items:
+                        - championId: 266
+                          allyChampionId: 64
+                          gamesTogether: 301
+                          winsTogether: 169
+                          lossesTogether: 132
+                          winrateTogether: 0.5615
+                          avgTeamGoldShare: 0.203
+                          sampleSize: 301
+                          patch: "15.6"
+                          tier: "EMERALD"
+                          queueId: 420
+                          region: euw1
+                    meta:
+                      region: euw1
+                      patch: "15.6"
+                      tier: "EMERALD"
+                      queueId: 420
+                      generatedAt: "2026-04-01T10:12:00Z"
+                      dataFreshnessSeconds: 120
+                      totalGames: 109734
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "404":
+          description: Champion not found in dataset.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+  /stats/champions/performance:
+    get:
+      operationId: getChampionPerformanceTableByRegion
+      tags:
+        - Stats
+      summary: Get champion per-minute performance table
+      description: |-
+        Retrieve normalized per-minute performance metrics by champion.
+        All metrics are computed within the requested region only.
+        All rates are returned as decimal values in range [0, 1] where applicable.
+      parameters:
+        - name: region
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Region"
+        - name: patch
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: tier
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/RankedTier"
+        - name: queue
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/QueueId"
+      responses:
+        "200":
+          description: Performance table retrieved successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ChampionPerformanceStatsListResponseData"
+                      meta:
+                        $ref: "#/components/schemas/StatsMetaCommon"
+                    required:
+                      - data
+                      - meta
+              examples:
+                euw1_success:
+                  value:
+                    success: true
+                    data:
+                      items:
+                        - championId: 266
+                          kdaAvg: 2.72
+                          csPerMinAvg: 7.4
+                          goldPerMinAvg: 426.8
+                          damagePerMinAvg: 693.2
+                          visionPerMinAvg: 1.06
+                          sampleSize: 12400
+                          patch: "15.6"
+                          tier: "EMERALD"
+                          queueId: 420
+                          region: euw1
+                    meta:
+                      region: euw1
+                      patch: "15.6"
+                      tier: "EMERALD"
+                      queueId: 420
+                      generatedAt: "2026-04-01T10:12:00Z"
+                      dataFreshnessSeconds: 120
+                      totalGames: 109734
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+  /stats/champions/{championId}/performance:
+    get:
+      operationId: getChampionPerformanceDetailByRegion
+      tags:
+        - Stats
+      summary: Get champion per-minute performance detail
+      description: |-
+        Retrieve normalized per-minute performance metrics for one champion.
+        All metrics are computed within the requested region only.
+        All rates are returned as decimal values in range [0, 1] where applicable.
+      parameters:
+        - name: championId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: region
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Region"
+        - name: patch
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: tier
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/RankedTier"
+        - name: queue
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/QueueId"
+      responses:
+        "200":
+          description: Performance detail retrieved successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ChampionPerformanceStatsItem"
+                      meta:
+                        $ref: "#/components/schemas/StatsMetaCommon"
+                    required:
+                      - data
+                      - meta
+              examples:
+                euw1_success:
+                  value:
+                    success: true
+                    data:
+                      championId: 266
+                      kdaAvg: 2.72
+                      csPerMinAvg: 7.4
+                      goldPerMinAvg: 426.8
+                      damagePerMinAvg: 693.2
+                      visionPerMinAvg: 1.06
+                      sampleSize: 12400
+                      patch: "15.6"
+                      tier: "EMERALD"
+                      queueId: 420
+                      region: euw1
+                    meta:
+                      region: euw1
+                      patch: "15.6"
+                      tier: "EMERALD"
+                      queueId: 420
+                      generatedAt: "2026-04-01T10:12:00Z"
+                      dataFreshnessSeconds: 120
+                      totalGames: 109734
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "404":
+          description: Champion not found in dataset.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+  /stats/champions/objectives:
+    get:
+      operationId: getChampionObjectiveStatsByRegion
+      tags:
+        - Stats
+      summary: Get champion objective contribution stats
+      description: |-
+        Retrieve objective contribution rates by champion.
+        All metrics are computed within the requested region only.
+        Objective metrics include metricDefinitionVersion to track definition changes.
+        All rates are returned as decimal values in range [0, 1].
+      parameters:
+        - name: region
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Region"
+        - name: patch
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: tier
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/RankedTier"
+        - name: queue
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/QueueId"
+      responses:
+        "200":
+          description: Objective stats retrieved successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ChampionObjectiveStatsListResponseData"
+                      meta:
+                        $ref: "#/components/schemas/StatsMetaCommon"
+                    required:
+                      - data
+                      - meta
+              examples:
+                euw1_success:
+                  value:
+                    success: true
+                    data:
+                      items:
+                        - championId: 266
+                          dragonParticipationRate: 0.58
+                          baronParticipationRate: 0.43
+                          heraldParticipationRate: 0.39
+                          towerParticipationRate: 0.62
+                          sampleSize: 12400
+                          metricDefinitionVersion: "v1.2"
+                          patch: "15.6"
+                          tier: "EMERALD"
+                          queueId: 420
+                          region: euw1
+                    meta:
+                      region: euw1
+                      patch: "15.6"
+                      tier: "EMERALD"
+                      queueId: 420
+                      generatedAt: "2026-04-01T10:12:00Z"
+                      dataFreshnessSeconds: 120
+                      totalGames: 109734
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+  /stats/champions/{championId}/game-length:
+    get:
+      operationId: getChampionGameLengthStatsByRegion
+      tags:
+        - Stats
+      summary: Get champion game-length segmented stats
+      description: |-
+        Retrieve short/medium/long game performance for one champion.
+        All metrics are computed within the requested region only.
+        All rates are returned as decimal values in range [0, 1].
+      parameters:
+        - name: championId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: region
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Region"
+        - name: patch
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: tier
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/RankedTier"
+        - name: queue
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/QueueId"
+      responses:
+        "200":
+          description: Game-length stats retrieved successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ChampionGameLengthStatsListResponseData"
+                      meta:
+                        $ref: "#/components/schemas/StatsMetaCommon"
+                    required:
+                      - data
+                      - meta
+              examples:
+                euw1_all_buckets:
+                  value:
+                    success: true
+                    data:
+                      short:
+                        championId: 266
+                        games: 3200
+                        wins: 1460
+                        winrate: 0.4563
+                        sampleSize: 3200
+                        patch: "15.6"
+                        tier: "EMERALD"
+                        queueId: 420
+                        region: euw1
+                      medium:
+                        championId: 266
+                        games: 6100
+                        wins: 3208
+                        winrate: 0.5259
+                        sampleSize: 6100
+                        patch: "15.6"
+                        tier: "EMERALD"
+                        queueId: 420
+                        region: euw1
+                      long:
+                        championId: 266
+                        games: 3100
+                        wins: 1547
+                        winrate: 0.4990
+                        sampleSize: 3100
+                        patch: "15.6"
+                        tier: "EMERALD"
+                        queueId: 420
+                        region: euw1
+                    meta:
+                      region: euw1
+                      patch: "15.6"
+                      tier: "EMERALD"
+                      queueId: 420
+                      generatedAt: "2026-04-01T10:12:00Z"
+                      dataFreshnessSeconds: 120
+                      totalGames: 109734
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "404":
+          description: Champion not found in dataset.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
+  /stats/champions/{championId}/early-game:
+    get:
+      operationId: getChampionEarlyGameStatsByRegion
+      tags:
+        - Stats
+      summary: Get champion early-game indicator stats
+      description: |-
+        Retrieve first blood, lane lead, and early death indicators for one champion.
+        All metrics are computed within the requested region only.
+        Early-game metrics include metricDefinitionVersion to track definition changes.
+        All rates are returned as decimal values in range [0, 1].
+      parameters:
+        - name: championId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: region
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Region"
+        - name: patch
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: tier
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/RankedTier"
+        - name: queue
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/QueueId"
+      responses:
+        "200":
+          description: Early-game stats retrieved successfully.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ChampionEarlyGameStatsItem"
+                      meta:
+                        $ref: "#/components/schemas/StatsMetaCommon"
+                    required:
+                      - data
+                      - meta
+              examples:
+                euw1_success:
+                  value:
+                    success: true
+                    data:
+                      championId: 266
+                      firstBloodInvolvementRate: 0.118
+                      laneLeadAt10Rate: 0.532
+                      laneLeadAt15Rate: 0.516
+                      earlyDeathRate: 0.203
+                      sampleSize: 12400
+                      metricDefinitionVersion: "v1.1"
+                      patch: "15.6"
+                      tier: "EMERALD"
+                      queueId: 420
+                      region: euw1
+                    meta:
+                      region: euw1
+                      patch: "15.6"
+                      tier: "EMERALD"
+                      queueId: 420
+                      generatedAt: "2026-04-01T10:12:00Z"
+                      dataFreshnessSeconds: 120
+                      totalGames: 109734
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "404":
+          description: Champion not found in dataset.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
   /players/{puuid}/stats/request:
     post:
       operationId: requestPlayerStatsJob
@@ -3843,6 +4560,383 @@ components:
         - generatedAt
         - dataFreshnessSeconds
         - totalGames
+    Lane:
+      type: string
+      enum:
+        - top
+        - jungle
+        - mid
+        - bottom
+        - support
+        - unknown
+    GameLengthBucket:
+      type: string
+      enum:
+        - short
+        - medium
+        - long
+    StatsMetaCommon:
+      type: object
+      properties:
+        region:
+          $ref: "#/components/schemas/Region"
+        patch:
+          type: string
+        tier:
+          type: string
+        queueId:
+          type: integer
+          format: int32
+        generatedAt:
+          type: string
+          format: date-time
+        dataFreshnessSeconds:
+          type: integer
+          format: int32
+        totalGames:
+          type: integer
+          format: int32
+      required:
+        - region
+        - patch
+        - tier
+        - queueId
+        - generatedAt
+        - dataFreshnessSeconds
+        - totalGames
+    StatsMetaWithLane:
+      allOf:
+        - $ref: "#/components/schemas/StatsMetaCommon"
+        - type: object
+          properties:
+            lane:
+              $ref: "#/components/schemas/Lane"
+          required:
+            - lane
+    ChampionMatchupStatsItem:
+      type: object
+      properties:
+        championId:
+          type: integer
+          format: int32
+        opponentChampionId:
+          type: integer
+          format: int32
+        lane:
+          $ref: "#/components/schemas/Lane"
+        games:
+          type: integer
+          format: int32
+        winsForChampion:
+          type: integer
+          format: int32
+        lossesForChampion:
+          type: integer
+          format: int32
+        winrateForChampion:
+          type: number
+          format: float
+        avgGoldDiffAt10:
+          type: number
+          format: float
+        avgCsDiffAt10:
+          type: number
+          format: float
+        sampleSize:
+          type: integer
+          format: int32
+        patch:
+          type: string
+        tier:
+          type: string
+        queueId:
+          type: integer
+          format: int32
+        region:
+          $ref: "#/components/schemas/Region"
+      required:
+        - championId
+        - opponentChampionId
+        - lane
+        - games
+        - winsForChampion
+        - lossesForChampion
+        - winrateForChampion
+        - avgGoldDiffAt10
+        - avgCsDiffAt10
+        - sampleSize
+        - patch
+        - tier
+        - queueId
+        - region
+    ChampionSynergyStatsItem:
+      type: object
+      properties:
+        championId:
+          type: integer
+          format: int32
+        allyChampionId:
+          type: integer
+          format: int32
+        gamesTogether:
+          type: integer
+          format: int32
+        winsTogether:
+          type: integer
+          format: int32
+        lossesTogether:
+          type: integer
+          format: int32
+        winrateTogether:
+          type: number
+          format: float
+        avgTeamGoldShare:
+          type: number
+          format: float
+        sampleSize:
+          type: integer
+          format: int32
+        patch:
+          type: string
+        tier:
+          type: string
+        queueId:
+          type: integer
+          format: int32
+        region:
+          $ref: "#/components/schemas/Region"
+      required:
+        - championId
+        - allyChampionId
+        - gamesTogether
+        - winsTogether
+        - lossesTogether
+        - winrateTogether
+        - avgTeamGoldShare
+        - sampleSize
+        - patch
+        - tier
+        - queueId
+        - region
+    ChampionPerformanceStatsItem:
+      type: object
+      properties:
+        championId:
+          type: integer
+          format: int32
+        kdaAvg:
+          type: number
+          format: float
+        csPerMinAvg:
+          type: number
+          format: float
+        goldPerMinAvg:
+          type: number
+          format: float
+        damagePerMinAvg:
+          type: number
+          format: float
+        visionPerMinAvg:
+          type: number
+          format: float
+        sampleSize:
+          type: integer
+          format: int32
+        patch:
+          type: string
+        tier:
+          type: string
+        queueId:
+          type: integer
+          format: int32
+        region:
+          $ref: "#/components/schemas/Region"
+      required:
+        - championId
+        - kdaAvg
+        - csPerMinAvg
+        - goldPerMinAvg
+        - damagePerMinAvg
+        - visionPerMinAvg
+        - sampleSize
+        - patch
+        - tier
+        - queueId
+        - region
+    ChampionObjectiveStatsItem:
+      type: object
+      properties:
+        championId:
+          type: integer
+          format: int32
+        dragonParticipationRate:
+          type: number
+          format: float
+        baronParticipationRate:
+          type: number
+          format: float
+        heraldParticipationRate:
+          type: number
+          format: float
+        towerParticipationRate:
+          type: number
+          format: float
+        sampleSize:
+          type: integer
+          format: int32
+        metricDefinitionVersion:
+          type: string
+        patch:
+          type: string
+        tier:
+          type: string
+        queueId:
+          type: integer
+          format: int32
+        region:
+          $ref: "#/components/schemas/Region"
+      required:
+        - championId
+        - dragonParticipationRate
+        - baronParticipationRate
+        - heraldParticipationRate
+        - towerParticipationRate
+        - sampleSize
+        - metricDefinitionVersion
+        - patch
+        - tier
+        - queueId
+        - region
+    ChampionGameLengthStatsItem:
+      type: object
+      properties:
+        championId:
+          type: integer
+          format: int32
+        games:
+          type: integer
+          format: int32
+        wins:
+          type: integer
+          format: int32
+        winrate:
+          type: number
+          format: float
+        sampleSize:
+          type: integer
+          format: int32
+        patch:
+          type: string
+        tier:
+          type: string
+        queueId:
+          type: integer
+          format: int32
+        region:
+          $ref: "#/components/schemas/Region"
+      required:
+        - championId
+        - games
+        - wins
+        - winrate
+        - sampleSize
+        - patch
+        - tier
+        - queueId
+        - region
+    ChampionEarlyGameStatsItem:
+      type: object
+      properties:
+        championId:
+          type: integer
+          format: int32
+        firstBloodInvolvementRate:
+          type: number
+          format: float
+        laneLeadAt10Rate:
+          type: number
+          format: float
+        laneLeadAt15Rate:
+          type: number
+          format: float
+        earlyDeathRate:
+          type: number
+          format: float
+        sampleSize:
+          type: integer
+          format: int32
+        metricDefinitionVersion:
+          type: string
+        patch:
+          type: string
+        tier:
+          type: string
+        queueId:
+          type: integer
+          format: int32
+        region:
+          $ref: "#/components/schemas/Region"
+      required:
+        - championId
+        - firstBloodInvolvementRate
+        - laneLeadAt10Rate
+        - laneLeadAt15Rate
+        - earlyDeathRate
+        - sampleSize
+        - metricDefinitionVersion
+        - patch
+        - tier
+        - queueId
+        - region
+    ChampionMatchupStatsListResponseData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChampionMatchupStatsItem"
+      required:
+        - items
+    ChampionSynergyStatsListResponseData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChampionSynergyStatsItem"
+      required:
+        - items
+    ChampionPerformanceStatsListResponseData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChampionPerformanceStatsItem"
+      required:
+        - items
+    ChampionObjectiveStatsListResponseData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChampionObjectiveStatsItem"
+      required:
+        - items
+    ChampionGameLengthStatsListResponseData:
+      type: object
+      properties:
+        short:
+          $ref: "#/components/schemas/ChampionGameLengthStatsItem"
+        medium:
+          $ref: "#/components/schemas/ChampionGameLengthStatsItem"
+        long:
+          $ref: "#/components/schemas/ChampionGameLengthStatsItem"
+      required:
+        - short
+        - medium
+        - long
     PlayerStatsType:
       type: string
       enum:
