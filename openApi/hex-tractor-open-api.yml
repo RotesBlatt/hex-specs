@@ -1679,6 +1679,62 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/simpleInternalError"
+  /players/autocomplete:
+    get:
+      operationId: autocompletePlayerNames
+      tags:
+        - Player
+      summary: Autocomplete player names by prefix
+      description: Retrieve a list of player names matching the given prefix for a specific region.
+      parameters:
+        - name: region
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Region"
+        - name: prefix
+          in: query
+          required: true
+          description: The search string to match player names against. Case-insensitive.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+          example: "Summoner"
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of results to return (default 10, max 50).
+          schema:
+            type: integer
+            format: int32
+            default: 10
+            maximum: 50
+      responses:
+        "200":
+          description: Player name suggestions retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlayerAutocompleteResponse"
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/validationError"
+        "401":
+          description: Unauthorized - Invalid or missing Authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleError"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/simpleInternalError"
   /auth/devices/register:
     post:
       operationId: registerDevice
@@ -5229,3 +5285,42 @@ components:
         - paramsHash
         - status
         - expiresAt
+    PlayerAutocompleteResponse:
+      type: object
+      properties:
+        prefix:
+          type: string
+          example: "Helom"
+        suggestions:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlayerAutocompleteSuggestion"
+      required:
+        - prefix
+        - suggestions
+    PlayerAutocompleteSuggestion:
+      type: object
+      properties:
+        summonerName:
+          type: string
+          example: "Helomatch"
+        tagLine:
+          type: string
+          example: "EUW"
+        region:
+          $ref: "#/components/schemas/Region"
+        summonerLevel:
+          type: integer
+          format: int32
+          x-type: int
+          example: 150
+        profileIconId:
+          type: integer
+          format: int
+          example: 12
+      required:
+        - summonerName
+        - tagLine
+        - region
+        - summonerLevel
+        - profileIconId
