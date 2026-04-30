@@ -4278,6 +4278,10 @@ components:
           type: string
           x-type: string
           description: "This field may be omitted if the player has been anonymized."
+        summonerLevel:
+          type: integer
+          format: int32
+          x-type: int
         leaguePoints:
           type: integer
           format: int32
@@ -5301,6 +5305,9 @@ components:
     PlayerAutocompleteSuggestion:
       type: object
       properties:
+        puuid:
+          type: string
+          example: "123e4567-e89b-12d3-a456-426614174000"
         summonerName:
           type: string
           example: "Helomatch"
@@ -5319,6 +5326,7 @@ components:
           format: int
           example: 12
       required:
+        - puuid
         - summonerName
         - tagLine
         - region
