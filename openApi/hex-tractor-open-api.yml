@@ -1845,6 +1845,7 @@ components:
           1400,
           1700,
           1710,
+          1750,
           1810,
           1820,
           1830,
@@ -1855,6 +1856,9 @@ components:
           2020,
           2300,
           2400,
+          2401,
+          2403,
+          2405,
         ]
       x-enum-varnames:
         [
@@ -1893,8 +1897,7 @@ components:
           BUTCHERS_BRIDGE_5V5_ARAM,
           LEGEND_OF_THE_PORO_KING_DEPRECATED,
           NEMESIS,
-          BLACK_MARKET_BRAWLERS,
-          NEXUS_SIEGE_DEPRECATED,
+          BLACK_MARKET_BRAWLERS,          NEXUS_SIEGE_DEPRECATED,
           DEFINITELY_NOT_DOMINION,
           ARURF_DEPRECATED,
           ALL_RANDOM,
@@ -1947,6 +1950,7 @@ components:
           ULTIMATE_SPELLBOOK,
           ARENA,
           ARENA_16_PLAYER,
+          ARENA_3x6,
           SWARM_1_PLAYER,
           SWARM_2_PLAYERS,
           SWARM_3_PLAYERS,
@@ -1957,6 +1961,9 @@ components:
           TUTORIAL_3,
           BRAWL,
           ARAM_MAYHEM,
+          ARAM_MAYHEM_2401,
+          ARAM_MAYHEM_2403,
+          ARAM_MAYHEM_2405,
         ]
     Region:
       type: string
