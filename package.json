@@ -28,7 +28,7 @@
         "mkdirp": "^3.0.1",
         "openapi-zod-client": "^1.18.2",
         "rimraf": "^5.0.5",
-        "typescript": "^5.3.3"
+        "typescript": "^6.0.3"
     },
     "dependencies": {
         "axios": "^1.6.7",
